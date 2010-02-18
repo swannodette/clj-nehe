@@ -10,11 +10,23 @@ lein swank
 
 You can then connect to this REPL.
 
+I highly recommend using Emacs/SLIME or Enclojure. It's critical when you're starting out to be able to jump around to source definition. In Emacs this can be done with *M-.*.
+
 h1. Tricks
 
 If you pass a display-proxy function to your app you can interact with the tutorials without having to restar the application completely.
 
 h1. Trouble Shooting
+
+h2. Missing function
+
+Some of the OpenGL has not been brought into Penumbra. However it's simple to import these things yourself with *gl-import*. For example *glClearDepth* has been imported but you can use it in your code like so:
+
+<pre>
+(gl-import glClearDepth clear-depth)
+</pre>
+
+h2. Signatures
 
 The signatures of your methods are *really* important.
 

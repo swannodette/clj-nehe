@@ -29,7 +29,6 @@
 ;; Fns
 
 (defn init [state]
-  (println "init")
   (app/title! "Nehe Tutorial 2")
   (app/vsync! false)
   (app/display-mode! *width* *height*)
