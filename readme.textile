@@ -24,28 +24,7 @@ h1. Tricks
 
 If you pass a display proxy function to your app you can interact with the tutorials without having to restart the application completely. No if you redefine *display* or any of the functions it calls your Penumbra app will update immediately. Interactive coding for the win!
 
-<pre>
-(defn display [[delta time] state]
-  (clear)
-  (load-identity)
-  (translate -1.5 0.0 -6.0)
-  (draw-triangles
-   (doall (map #(apply vertex %) *tri*)))
-  (translate 3.0 0.0 0.0)
-  (draw-quads
-   (doall (map #(apply vertex %) *sqr*)))
-  (app/repaint!))
-
-(defn display-proxy [& args]
-  (apply display args))
-
-(def app-options {:reshape reshape
-                  :display display-proxy
-                  :init init})
-
-(defn start []
-  (app/start app-options {}))
-</pre>
+<script src="http://gist.github.com/308212.js"></script>
 
 h1. Converting OpenGL API names
 
@@ -69,42 +48,19 @@ h2. glBegin()/glEnd()
 
 Also you'll rarely see glBegin() or glEnd() in Penumbra code. You see something like *draw-[option]*:
 
-<pre>
-glBegin(GL_QUADS);
-glVertex3f(1.0f, 1.0f, 1.0f);
-glVertex3f(-1.0f, 1.0f, 1.0f);
-glVertex3f(-1.0f, -1.0f, 1.0f);
-glVertex3f(1.0f, -1.0f, 1.0f);
-glEnd()
-</pre>
+<script src="http://gist.github.com/308217.js"></script>
 
 Becomes
 
-<pre>
-(draw-quads
-  (vertex 1 1 1)
-  (vertex -1 1 1)
-  (vertex -1 -1 1)
-  (vertex 1 -1 1))
-</pre>
+<script src="http://gist.github.com/308219.js"></script>
 
 In OpenGL you often specify many state options via OpenGL constants. In Penumbra you can do this with keywords, again dropping the *gl* prefix. Some examples:
 
-<pre>
-glEnable(GL_DEPTH_TEST);
-glDepthTest(GL_LEQUAL);
-glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-glShadeModel(GL_SMOOTH);
-</pre>
+<script src="http://gist.github.com/308220.js"></script>
 
 Becomes
 
-<pre>
-(enable :depth-test)
-(depth-test :lequal)
-(hint :perspective-correction-hint :nicest)
-(shade-model :smooth)
-</pre>
+<script src="http://gist.github.com/308221.js"></script>
 
 h1. Trouble Shooting
 
@@ -112,26 +68,18 @@ h2. Missing functions
 
 Some of the OpenGL API exposed by Lightweight Java Game Library (LWJGL) has not been brought into Penumbra. However it's simple to import these things yourself with *gl-import*. For example *glClearDepth* has not been imported, but you just can import it yourself like so:
 
-<pre>
-(use '[penumbra.opengl.core :only [gl-import]])
-(gl-import glClearDepth clear-depth)
-</pre>
+<script src="http://gist.github.com/308222.js"></script>
 
 h2. Signatures
 
 The signatures (or arglists) of your methods are *really* important. For example if you provide a reshape fn it must look something like the following:
 
-<pre>
-(defn reshape [[x y width height] state]
-  ...)
-</pre>
+<script src="http://gist.github.com/308223.js"></script>
 
 You can get a full list of required signatures here, "http://wiki.github.com/ztellman/penumbra/callbacks":http://wiki.github.com/ztellman/penumbra/callbacks.
 
 It also important that if you use *app/start* with options you must also pass in a map for the state.
 
-<pre>
-(app/start callback-map {})
-</pre>
+<script src="http://gist.github.com/308225.js"></script>
 
 If you don't your program will crash immediately.
