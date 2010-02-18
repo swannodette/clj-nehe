@@ -83,6 +83,15 @@ Becomes
 In OpenGL you often specify many state options via OpenGL constants. In Penumbra you can do this with keywords, again dropping the *gl* prefix. Some examples:
 
 <pre>
+glEnable(GL_DEPTH_TEST);
+glDepthTest(GL_LEQUAL);
+glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+glShadeModel(GL_SMOOTH);
+</pre>
+
+Becomes
+
+<pre>
 (enable :depth-test)
 (depth-test :lequal)
 (hint :perspective-correction-hint :nicest)
