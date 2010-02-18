@@ -53,11 +53,15 @@ h2. Signatures
 
 The signatures of your methods are *really* important. For example if you provide a reshape fn it must look something like the following:
 
+<pre>
 (defn reshape [[x y width height] state]
   ...)
+</pre>
 
 It also important that if you use *app/start* with options you must also pass in a map for the state.
 
+<pre>
 (app/start callback-map {})
+</pre>
 
 If you don't your program will crash immediately.
