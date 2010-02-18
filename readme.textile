@@ -1,6 +1,6 @@
 h1. Running the Tutorials
 
-You need to have installed Leiningen 1.1.0. Once you've done that you can run the following if you're using Emacs/SLIME or Enclojure:
+You need to have installed "Leiningen 1.1.0":http://github.com/technomancy/leiningen. Once you've done that you can run the following if you're using Emacs/SLIME or Enclojure:
 
 <pre class="console">
 lein deps
@@ -8,19 +8,42 @@ lein native-deps
 lein swank
 </pre>
 
-You can then connect to this REPL.
+You can then connect to this REPL. In Emacs/SLIME this can be done with *M-x slime-connect* and just press the enter key twice to use the defaults.
 
-I highly recommend using Emacs/SLIME or Enclojure. It's critical when you're starting out to be able to jump around to source definition. In Emacs this can be done with *M-.*.
+I highly recommend using Emacs/SLIME or Enclojure. It's useful when you're starting out to be able to jump to source definitions in Penumbra. In Emacs this can be done with *M-.* (that's *Meta-period*).
 
 h1. Tricks
 
-If you pass a display-proxy function to your app you can interact with the tutorials without having to restar the application completely.
+If you pass a display proxy function to your app you can interact with the tutorials without having to restart the application completely. No if you redefine *display* or any of the functions it calls your Penumbra app will update immediately. Interactive coding for the win!
+
+<pre>
+(defn display [[delta time] state]
+  (clear)
+  (gl-load-identity-matrix)
+  (translate -1.5 0.0 -6.0)
+  (draw-triangles
+   (doall (map #(apply vertex %) *tri*)))
+  (translate 3.0 0.0 0.0)
+  (draw-quads
+   (doall (map #(apply vertex %) *sqr*)))
+  (app/repaint!))
+
+(defn display-proxy [& args]
+  (apply display args))
+
+(def app-options {:reshape reshape
+                  :display display-proxy
+                  :init init})
+
+(defn start []
+  (app/start app-options {}))
+</pre>
 
 h1. Trouble Shooting
 
-h2. Missing function
+h2. Missing functions
 
-Some of the OpenGL has not been brought into Penumbra. However it's simple to import these things yourself with *gl-import*. For example *glClearDepth* has been imported but you can use it in your code like so:
+Some of the OpenGL API exposed by Lightweight Java Game Library (LWJGL) has not been brought into Penumbra. However it's simple to import these things yourself with *gl-import*. For example *glClearDepth* has not been imported, but you just can import it yourself like so:
 
 <pre>
 (gl-import glClearDepth clear-depth)
@@ -28,12 +51,12 @@ Some of the OpenGL has not been brought into Penumbra. However it's simple to im
 
 h2. Signatures
 
-The signatures of your methods are *really* important.
+The signatures of your methods are *really* important. For example if you provide a reshape fn it must look something like the following:
 
 (defn reshape [[x y width height] state]
   ...)
 
-It also important that if you use app/start that you pass in a map for the state.
+It also important that if you use *app/start* with options you must also pass in a map for the state.
 
 (app/start callback-map {})
 
