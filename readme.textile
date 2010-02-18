@@ -1,0 +1,10 @@
+h1. Trouble Shooting
+
+The signatures of your methods are *really* important.
+
+(defn reshape [[x y width height] state]
+  ...)
+
+It also important that if you use app/start that you pass in a map for the state.
+
+(app/start callback state)
