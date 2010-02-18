@@ -43,11 +43,11 @@
 (defn reshape [[x y width height] state]
   (viewport 0 0 *width* *height*)
   (frustum-view 45.0 (/ *width* *height*) 0.1 100.0)
-  (gl-load-identity-matrix))
+  (load-identity))
 
 (defn display [[delta time] state]
   (clear)
-  (gl-load-identity-matrix)
+  (load-identity)
   (translate -1.5 0.0 -6.0)
   (draw-triangles
    (doall (map #(apply vertex %) *tri*)))

@@ -46,17 +46,20 @@ h2. Missing functions
 Some of the OpenGL API exposed by Lightweight Java Game Library (LWJGL) has not been brought into Penumbra. However it's simple to import these things yourself with *gl-import*. For example *glClearDepth* has not been imported, but you just can import it yourself like so:
 
 <pre>
+(use '[penumbra.opengl.core :only [gl-import]])
 (gl-import glClearDepth clear-depth)
 </pre>
 
-h2. Arglists
+h2. Signatures
 
-The arglists of your methods are *really* important. For example if you provide a reshape fn it must look something like the following:
+The signatures (or arglists) of your methods are *really* important. For example if you provide a reshape fn it must look something like the following:
 
 <pre>
 (defn reshape [[x y width height] state]
   ...)
 </pre>
+
+You can get a full list of required signatures here, "http://wiki.github.com/ztellman/penumbra/callbacks":http://wiki.github.com/ztellman/penumbra/callbacks.
 
 It also important that if you use *app/start* with options you must also pass in a map for the state.
 
