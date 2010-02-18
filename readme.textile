@@ -49,9 +49,9 @@ Some of the OpenGL API exposed by Lightweight Java Game Library (LWJGL) has not 
 (gl-import glClearDepth clear-depth)
 </pre>
 
-h2. Signatures
+h2. Arglists
 
-The signatures of your methods are *really* important. For example if you provide a reshape fn it must look something like the following:
+The arglists of your methods are *really* important. For example if you provide a reshape fn it must look something like the following:
 
 <pre>
 (defn reshape [[x y width height] state]
