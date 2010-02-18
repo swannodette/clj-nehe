@@ -1,6 +1,12 @@
 h1. Running the Tutorials
 
-You need to have installed "Leiningen 1.1.0":http://github.com/technomancy/leiningen. Once you've done that you can run the following if you're using Emacs/SLIME or Enclojure:
+You need to have installed "Leiningen 1.1.0":http://github.com/technomancy/leiningen. You can then clone this repo in the usual way:
+
+<pre>
+git clone git://github.com/swannodette/clj-nehe.git
+</pre> 
+
+Once you've done that you can run the following if you're using Emacs/SLIME or Enclojure:
 
 <pre class="console">
 lein deps
@@ -11,6 +17,8 @@ lein swank
 You can then connect to this REPL. In Emacs/SLIME this can be done with *M-x slime-connect* and just press the enter key twice to use the defaults.
 
 I highly recommend using Emacs/SLIME or Enclojure. It's useful when you're starting out to be able to jump to source definitions in Penumbra. In Emacs this can be done with *M-.* (that's *Meta-period*).
+
+If somebody has more elaborate instructions for Enclojure, VimClojure, etc I would love to add them to wiki. I plan on getting to this eventually but I'm an Emacs person.
 
 h1. Tricks
 
