@@ -2,7 +2,7 @@ h1. Running the Tutorials
 
 You need to have installed "Leiningen 1.1.0":http://github.com/technomancy/leiningen. You can then clone this repo in the usual way:
 
-<pre>
+<pre class="console">
 git clone git://github.com/swannodette/clj-nehe.git
 </pre> 
 
