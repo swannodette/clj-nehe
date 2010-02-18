@@ -1,8 +1,7 @@
 (ns clj-nehe.tutorial1
   (:use [penumbra opengl geometry]
         [penumbra.opengl.core :only [gl-import]])
-  (:require [penumbra.app :as app]
-            [penumbra.text :as text]))
+  (:require [penumbra.app :as app]))
 
 ;; -----------------------------------------------------------------------------
 ;; Vars
@@ -43,7 +42,8 @@
 (defn reshape [[x y width height] state]
   (viewport 0 0 *width* *height*)
   (frustum-view 45.0 (/ *width* *height*) 0.1 100.0)
-  (load-identity))
+  (load-identity)
+  state)
 
 (defn display [[delta time] state]
   (clear)

@@ -27,7 +27,7 @@ If you pass a display proxy function to your app you can interact with the tutor
 <pre>
 (defn display [[delta time] state]
   (clear)
-  (gl-load-identity-matrix)
+  (load-identity)
   (translate -1.5 0.0 -6.0)
   (draw-triangles
    (doall (map #(apply vertex %) *tri*)))
