@@ -1,3 +1,19 @@
+h1. Running the Tutorials
+
+You need to have installed Leiningen 1.1.0. Once you've done that you can run the following if you're using Emacs/SLIME or Enclojure:
+
+<pre class="console">
+lein deps
+lein native-deps
+lein swank
+</pre>
+
+You can then connect to this REPL.
+
+h1. Tricks
+
+If you pass a display-proxy function to your app you can interact with the tutorials without having to restar the application completely.
+
 h1. Trouble Shooting
 
 The signatures of your methods are *really* important.
@@ -7,4 +23,6 @@ The signatures of your methods are *really* important.
 
 It also important that if you use app/start that you pass in a map for the state.
 
-(app/start callback state)
+(app/start callback-map {})
+
+If you don't your program will crash immediately.
