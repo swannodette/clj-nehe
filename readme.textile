@@ -24,7 +24,9 @@ h1. Tricks
 
 If you pass a display proxy function to your app you can interact with the tutorials without having to restart the application completely. No if you redefine *display* or any of the functions it calls your Penumbra app will update immediately. Interactive coding for the win!
 
+<div>
 <script src="http://gist.github.com/308212.js"></script>
+</div>
 
 h1. Converting OpenGL API names
 
