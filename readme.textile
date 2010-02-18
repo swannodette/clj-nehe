@@ -43,17 +43,21 @@ h1. Converting OpenGL API names
 
 Penumbra chooses to approach OpenGL programming that is very different from the one most OpenGL binding libraries. Penumbra is an opinionated peice of software. This may be slightly disturbing at first because it's not immediately obvious how to translate OpenGL code you might find on the web to work under Penumbra.
 
-h2. Name
+h2. Naming Conventions
 
 For the most part names have been shorted. You don't have to write the *gl* prefix before everything:
 
 <pre>
 glLoadIdentity()
+</pre>
 
-=>
+Becomes
 
+<pre>
 (load-identity)
 </pre>
+
+h2. glBegin()/glEnd()
 
 Also you'll rarely see glBegin() or glEnd() in Penumbra code. You see something like *draw-[option]*:
 
@@ -64,9 +68,11 @@ glVertex3f(-1.0f, 1.0f, 1.0f);
 glVertex3f(-1.0f, -1.0f, 1.0f);
 glVertex3f(1.0f, -1.0f, 1.0f);
 glEnd()
+</pre>
 
-=>
+Becomes
 
+<pre>
 (draw-quads
   (vertex 1 1 1)
   (vertex -1 1 1)
