@@ -39,6 +39,50 @@ If you pass a display proxy function to your app you can interact with the tutor
   (app/start app-options {}))
 </pre>
 
+h1. Converting OpenGL API names
+
+Penumbra chooses to approach OpenGL programming that is very different from the one most OpenGL binding libraries. Penumbra is an opinionated peice of software. This may be slightly disturbing at first because it's not immediately obvious how to translate OpenGL code you might find on the web to work under Penumbra.
+
+h2. Name
+
+For the most part names have been shorted. You don't have to write the *gl* prefix before everything:
+
+<pre>
+glLoadIdentity()
+
+=>
+
+(load-identity)
+</pre>
+
+Also you'll rarely see glBegin() or glEnd() in Penumbra code. You see something like *draw-[option]*:
+
+<pre>
+glBegin(GL_QUADS);
+glVertex3f(1.0f, 1.0f, 1.0f);
+glVertex3f(-1.0f, 1.0f, 1.0f);
+glVertex3f(-1.0f, -1.0f, 1.0f);
+glVertex3f(1.0f, -1.0f, 1.0f);
+glEnd()
+
+=>
+
+(draw-quads
+  (vertex 1 1 1)
+  (vertex -1 1 1)
+  (vertex -1 -1 1)
+  (vertex 1 -1 1))
+</pre>
+
+In OpenGL you often specify many state options via OpenGL constants. In Penumbra you can do this with keywords, again dropping the *gl* prefix. Some examples:
+
+<pre>
+(enable :depth-test)
+(depth-test :lequal)
+(hint :perspective-correction-hint :nicest)
+(shade-model :smooth)
+</pre>
+
 h1. Trouble Shooting
 
 h2. Missing functions
