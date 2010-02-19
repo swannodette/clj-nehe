@@ -28,10 +28,10 @@ If you pass a display proxy function to your app you can interact with the tutor
 (defn display [[delta time] state]
   (clear)
   (load-identity)
-  (translate -1.5 0.0 -6.0)
+  (translate -1.5 0 -6)
   (draw-triangles
    (doall (map #(apply vertex %) *tri*)))
-  (translate 3.0 0.0 0.0)
+  (translate 3 0 0)
   (draw-quads
    (doall (map #(apply vertex %) *sqr*)))
   (app/repaint!))
@@ -65,7 +65,11 @@ Becomes
 (load-identity)
 </pre>
 
-h2. glBegin()/glEnd()
+h2. Type Hints
+
+Often you'll find your self adding type hints in Clojure to avoid the overhead of reflection. However, you really don't need to bother type hinting arguments to any of Penumbra's fns. They will be converted to the proper representation.
+
+h2. glBegin() and glEnd()
 
 Also you'll rarely see glBegin() or glEnd() in Penumbra code. You see something like *draw-[option]*:
 
@@ -87,6 +91,8 @@ Becomes
   (vertex -1 -1 1)
   (vertex 1 -1 1))
 </pre>
+
+Notice the lack of type hints or even bothering to write the numbers in their floating point represenation.
 
 In OpenGL you often specify many state options via OpenGL constants. In Penumbra you can do this with keywords, again dropping the *gl* prefix. Some examples:
 
