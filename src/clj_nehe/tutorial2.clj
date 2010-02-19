@@ -1,4 +1,4 @@
-(ns clj-nehe.tutorial1
+(ns clj-nehe.tutorial2
   (:use [penumbra opengl geometry]
         [penumbra.opengl.core :only [gl-import]])
   (:require [penumbra.app :as app]))
