@@ -18,10 +18,17 @@
             [1 -1 0]]   ; vertex
      )
 
-(def *sqr* [[-1 1 0]
+(def *quad* [[-1 1 0]
             [1 1 0]
             [1 -1 0]
             [-1 -1 0]])
+
+;; -----------------------------------------------------------------------------
+;; Helpers
+
+(defn color-and-vertex [[a b]]
+  (apply color a)
+  (apply vertex b))
 
 ;; -----------------------------------------------------------------------------
 ;; Import
@@ -55,12 +62,11 @@
   (translate -1.5 0 -6)
   (draw-triangles
    (doall
-    (map (fn [[a b]] (apply color a) (apply vertex b))
-         (partition 2 *tri*))))
+    (map color-and-vertex (partition 2 *tri*))))
   (translate 3 0 0)
   (color 0.5 0.5 1)
   (draw-quads
-   (doall (map #(apply vertex %) *sqr*)))
+   (doall (map #(apply vertex %) *quad*)))
   (app/repaint!))
 
 (defn display-proxy [& args]
