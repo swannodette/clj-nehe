@@ -14,10 +14,10 @@
             [-1 -1 0]
             [1 -1 0]])
 
-(def *sqr* [[-1 1 0]
-            [1 1 0]
-            [1 -1 0]
-            [-1 -1 0]])
+(def *quad* [[-1 1 0]
+             [1 1 0]
+             [1 -1 0]
+             [-1 -1 0]])
 
 ;; -----------------------------------------------------------------------------
 ;; Import
@@ -53,7 +53,7 @@
    (doall (map #(apply vertex %) *tri*)))
   (translate 3 0 0)
   (draw-quads
-   (doall (map #(apply vertex %) *sqr*)))
+   (doall (map #(apply vertex %) *quad*)))
   (app/repaint!))
 
 (defn display-proxy [& args]
