@@ -1,4 +1,4 @@
-(ns clj-nehe.tutorial2
+(ns clj-nehe.tutorial3
   (:use [penumbra opengl geometry]
         [penumbra.opengl.core :only [gl-import]])
   (:require [penumbra.app :as app]))
@@ -10,9 +10,13 @@
 
 (def *height* 480)
 
-(def *tri* [[0 1 0]
-            [-1 -1 0]
-            [1 -1 0]])
+(def *tri* [[1 0 0]     ; color, red
+            [0 1 0]     ; vertex
+            [0 1 0]     ; color, green
+            [-1 -1 0]   ; vertex
+            [0 0 1]     ; color, blue
+            [1 -1 0]]   ; vertex
+     )
 
 (def *sqr* [[-1 1 0]
             [1 1 0]
@@ -28,7 +32,7 @@
 ;; Fns
 
 (defn init [state]
-  (app/title! "Nehe Tutorial 2")
+  (app/title! "Nehe Tutorial 3")
   (app/vsync! false)
   (app/display-mode! *width* *height*)
   (shade-model :smooth)
@@ -50,8 +54,11 @@
   (load-identity)
   (translate -1.5 0 -6)
   (draw-triangles
-   (doall (map #(apply vertex %) *tri*)))
+   (doall
+    (map (fn [[a b]] (apply color a) (apply vertex b))
+         (partition 2 *tri*))))
   (translate 3 0 0)
+  (color 0.5 0.5 1)
   (draw-quads
    (doall (map #(apply vertex %) *sqr*)))
   (app/repaint!))

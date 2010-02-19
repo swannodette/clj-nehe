@@ -69,6 +69,12 @@ h2. Type Hints
 
 Often you'll find your self adding type hints in Clojure to avoid the overhead of reflection. However, you really don't need to bother type hinting arguments to any of Penumbra's fns. They will be converted to the proper representation.
 
+That being said be careful with division. Without type coercision dividing two integers will result in a Ratio. You can avoid this like so:
+
+<pre>
+(/ (double 5) 100) ; -> 0.05
+</pre>
+
 h2. glBegin() and glEnd()
 
 Also you'll rarely see glBegin() or glEnd() in Penumbra code. You see something like *draw-[option]*:
