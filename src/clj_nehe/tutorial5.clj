@@ -48,13 +48,47 @@
 
 (def *cube*
      [
-      ; front face
-      [-1 1 0]
-      [1 1 0]
-      [1 -1 0]
-      [-1 -1 0]
+      ; top face
+      [0 1 0]     ; green
+      [1 1 -1]    ; top right
+      [-1 1 -1]   ; top left
+      [-1 1 1]    ; bottom left
+      [1 1 1]     ; bottom right
 
-      ; 
+      ; bottom
+      [0 1 0]     ; green
+      [1 -1 1]    ; top right
+      [-1 -1 1]   ; top left
+      [-1 -1 -1]  ; bottom left
+      [1 -1 -1]   ; bottom right
+
+      ; front
+      [1 0 0]     ; red
+      [1 1 1]     ; top right
+      [-1 1 1]    ; top left
+      [-1 -1 1]   ; bottom left
+      [1 -1 1]    ; bottom right
+      
+      ; back
+      [1 1 0]     ; yellow
+      [1 -1 -1]   ; bottom left
+      [-1 -1 -1]  ; bottom right
+      [-1 1 -1]   ; top right
+      [1 1 -1]    ; top left
+
+      ; left
+      [0 0 1]     ; blue
+      [-1 1 1]    ; top right
+      [-1 1 -1]   ; top left
+      [-1 -1 -1]  ; bottom left
+      [-1 -1 1]   ; bottom right
+
+      ; right
+      [1 0 1]     ; violet
+      [1 1 -1]    ; top right
+      [1 1 1]     ; top left
+      [1 -1 1]    ; bottom left
+      [1 -1 -1]   ; bottom right
       ])
 
 ;; -----------------------------------------------------------------------------
@@ -111,12 +145,13 @@
    (doall
     (map color-and-vertex (partition 2 *pyramid*))))
   (load-identity)
-  (translate -1.5 0 -6)
+  (translate -1.5 0 -7)
   (translate 3 0 0)
-  (rotate (:rcube state) 1 0 0)
+  (rotate (:rcube state) 1 1 1)
   (color 0.5 0.5 1)
   (draw-quads
-   (doall (map #(apply vertex %) *cube*)))
+   (doall
+    (map color-and-4vertices (partition 5 *cube*))))
   (app/repaint!))
 
 (defn display-proxy [& args]
