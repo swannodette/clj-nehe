@@ -64,8 +64,6 @@
        (update-in [:rquad] #(+ % 0.15))))
 
 (defn display [[delta time] state]
-  (clear)
-  (load-identity)
   (translate -1.5 0 -6)
   (rotate (:rtri state) 0 1 0)
   (draw-triangles

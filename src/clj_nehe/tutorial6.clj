@@ -103,8 +103,6 @@
        (update-in [:zrot] #(+ % 0.4))))
 
 (defn display [[delta time] state]
-  (clear)
-  (load-identity)
   (translate 0 0 -5)
   (rotate (:xrot state) 1 0 0)
   (rotate (:yrot state) 0 1 0)

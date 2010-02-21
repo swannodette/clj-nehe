@@ -57,8 +57,6 @@
   state)
 
 (defn display [[delta time] state]
-  (clear)
-  (load-identity)
   (translate -1.5 0 -6)
   (draw-triangles
    (doall
