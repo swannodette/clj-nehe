@@ -28,7 +28,7 @@
 
       ; top face
       [0 1] [-1 1 -1]   ; top left of the texture and quad
-      [0 0] [-1 1 1]   ; bottom left of the texture and quad
+      [0 0] [-1 1 1]    ; bottom left of the texture and quad
       [1 0] [1 1 1]     ; bottom right of the texture and quad
       [1 1] [1 1 -1]    ; top right of the texture and quad
 
