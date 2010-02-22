@@ -49,7 +49,7 @@ If you pass a display proxy function to your app you can interact with the tutor
 
 h1. Converting OpenGL API names
 
-Penumbra chooses to approach OpenGL programming that is very different from the one most OpenGL binding libraries. Penumbra is an opinionated peice of software. This may be slightly disturbing at first because it's not immediately obvious how to translate OpenGL code you might find on the web to work under Penumbra.
+Penumbra's approach OpenGL programming is very different from the one most adopted by most OpenGL binding libraries. Most libraries simply expose the C API with little fanfare. However, Penumbra is an opinionated peice of software and tries to remove as much tedium from OpenGL programming as possible. This may be slightly disturbing at first because it's not immediately obvious how to translate OpenGL code you might find on the web to work under Penumbra. The following highlights some guiding principles.
 
 h2. Naming Conventions
 
