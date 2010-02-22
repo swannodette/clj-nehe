@@ -13,6 +13,7 @@
 (def *image* (ImageIO/read (File. (pwd) "/src/clj_nehe/Crate.bmp")))
 (def *width* 640)
 (def *height* 480)
+(def *light* (atom true))
 (def *light-ambient* [0.5 0.5 0.5 1])
 (def *light-diffuse* [1 1 1 1])
 (def *light-position* [0 0 2 1])
@@ -20,36 +21,42 @@
 (def *cube*
      [
       ; front face
+      [0 0 1]           ; normal pointing towards viewer
       [0 0] [-1 -1 1]   ; bottom left of the texture and quad
       [1 0] [1 -1 1]    ; bottom right of the texture and quad
       [1 1] [1 1 1]     ; top right of the texture and quad
       [0 1] [-1 1 1]    ; top left of the texture and quad
 
       ; back face
+      [0 0 -1]          ; normal pointing away from viewer
       [1 0] [-1 -1 -1]  ; bottom right of the texture and quad
       [1 1] [-1 1 -1]   ; top right of the texture and quad
       [0 1] [1 1 -1]    ; top left of the texture and quad
       [0 0] [1 -1 -1]   ; bottom left of the texture and quad
 
       ; top face
+      [0 1 0]           ; normal pointing up
       [0 1] [-1 1 -1]   ; top left of the texture and quad
       [0 0] [-1 1 1]    ; bottom left of the texture and quad
       [1 0] [1 1 1]     ; bottom right of the texture and quad
       [1 1] [1 1 -1]    ; top right of the texture and quad
 
       ; bottom face
+      [0 -1 0]          ; normal pointing down
       [1 1] [-1 -1 -1]  ; top right of the texture and quad
       [0 1] [1 -1 -1]   ; top left of the texture and quad
       [0 0] [1 -1 1]    ; bottom left of the texture and quad
       [1 0] [-1 -1 1]   ; bottom right of the texture and quad
 
       ; right face
+      [1 0 0]           ; normal pointing right
       [1 0] [1 -1 -1]   ; bottom right of the texture and quad
       [1 1] [1 1 -1]    ; top right of the texture and quad
       [0 1] [1 1 1]     ; top left of the texture and quad
       [0 0] [1 -1 1]    ; bottom left of the texture and quad
 
       ; left face
+      [-1 0 0]          ; normal pointing left
       [0 0] [-1 -1 -1]  ; bottom left of the texture and quad
       [1 0] [-1 -1 1]   ; bottom right of the texture and quad
       [1 1] [-1 1 1]    ; top right of the texture and quad
@@ -68,7 +75,12 @@
 (defn tex-coord [x y]
   (gl-tex-coord-2 x y))
 
-(def tex-coord-and-vertex (series tex-coord vertex))
+(def normal-and-4tex-coord-and-vertices
+     (series normal
+             tex-coord vertex
+             tex-coord vertex
+             tex-coord vertex
+             tex-coord vertex))
 
 ;; -----------------------------------------------------------------------------
 ;; Import
@@ -101,9 +113,8 @@
       (assoc :yspeed 0)
       (assoc :z -5)
       (assoc :tex0 (load-texture-from-image *image* false :nearest))
-      ;(assoc :tex1 (load-texture-from-file *image* false :linear))
-      ;(assoc :tex2 (load-texture-from-file *image* true))
-      ))
+      (assoc :tex1 (load-texture-from-image *image* false :linear))
+      (assoc :tex2 (load-texture-from-image *image* true))))
 
 (defn reshape [[x y width height] state]
   (viewport 0 0 *width* *height*)
@@ -118,6 +129,15 @@
 
 (defn key-press [key state]
   (condp = key
+    "l"  (if @*light*
+           (do
+             (reset! *light* false)
+             (disable :lighting)
+             state)
+           (do
+             (reset! *light* true)
+             (enable :lighting)
+             state))
     :up (update-in state [:xspeed] #(- % 0.1))
     :down (update-in state [:xspeed] #(+ % 0.1))
     :left (update-in state [:yspeed] #(- % 0.1))
@@ -131,7 +151,7 @@
   (with-texture (:texture state)
     (draw-quads
      (doall
-      (map tex-coord-and-vertex (partition 2 *cube*)))))
+      (map normal-and-4tex-coord-and-vertices (partition 9 *cube*)))))
   (app/repaint!))
 
 (defn display-proxy [& args]
