@@ -112,9 +112,11 @@
       (assoc :xspeed 0)
       (assoc :yspeed 0)
       (assoc :z -5)
-      (assoc :tex0 (load-texture-from-image *image* false :nearest))
-      (assoc :tex1 (load-texture-from-image *image* false :linear))
-      (assoc :tex2 (load-texture-from-image *image* true))))
+      (assoc :filter 0)
+      (assoc :texs
+        [(load-texture-from-image *image* false :nearest)
+         (load-texture-from-image *image* false :linear)
+         (load-texture-from-image *image* true)])))
 
 (defn reshape [[x y width height] state]
   (viewport 0 0 *width* *height*)
@@ -129,26 +131,33 @@
 
 (defn key-press [key state]
   (condp = key
-    "l"  (if @*light*
-           (do
-             (reset! *light* false)
-             (disable :lighting)
-             state)
-           (do
-             (reset! *light* true)
-             (enable :lighting)
-             state))
-    :up (update-in state [:xspeed] #(- % 0.1))
-    :down (update-in state [:xspeed] #(+ % 0.1))
-    :left (update-in state [:yspeed] #(- % 0.1))
+    "l"    (if @*light*
+             (do
+               (reset! *light* false)
+               (disable :lighting)
+               state)
+             (do
+               (reset! *light* true)
+               (enable :lighting)
+               state))
+    "f"    (update-in state [:filter] #(mod (inc %) 3))
+    :up    (update-in state [:xspeed] #(- % 0.1))
+    :down  (update-in state [:xspeed] #(+ % 0.1))
+    :left  (update-in state [:yspeed] #(- % 0.1))
     :right (update-in state [:yspeed] #(+ % 0.1))
+    state))
+
+(defn key-type [key state]
+  (condp = key
+    "w" (update-in state [:z] #(+ % 0.2))
+    "s" (update-in state [:z] #(- % 0.2))
     state))
 
 (defn display [[delta time] state]
   (translate 0 0 (:z state))
   (rotate (:xrot state) 1 0 0)
   (rotate (:yrot state) 0 1 0)
-  (with-texture (:texture state)
+  (with-texture (nth (:texs state) (:filter state))
     (draw-quads
      (doall
       (map normal-and-4tex-coord-and-vertices (partition 9 *cube*)))))
@@ -160,6 +169,7 @@
 (def options {:reshape reshape
               :update update
               :key-press key-press
+              :key-type key-type
               :display display-proxy
               :init init})
 
