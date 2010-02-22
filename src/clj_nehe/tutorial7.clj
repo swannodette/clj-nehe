@@ -154,7 +154,7 @@
   (translate 0 0 (:z state))
   (rotate (:xrot state) 1 0 0)
   (rotate (:yrot state) 0 1 0)
-  (with-texture (nth (:texs state) (:filter state))
+  (with-texture ((:texs state) (:filter state))
     (draw-quads
      (doall
       (map normal-and-4tex-coord-and-vertices (partition 9 *cube*)))))
