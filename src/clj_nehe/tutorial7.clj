@@ -124,9 +124,15 @@
   state)
 
 (defn update [[delta time] state]
-   (-> state
-       (update-in [:xrot] #(+ % (:xspeed state)))
-       (update-in [:yrot] #(+ % (:yspeed state)))))
+  (let [state (if (state :zoom-in)
+                (update-in state [:z] #(+ % 0.002))
+                state)
+        state (if (state :zoom-out)
+                (update-in state [:z] #(- % 0.002))
+                state)]
+    (-> state
+        (update-in [:xrot] #(+ % (:xspeed state)))
+        (update-in [:yrot] #(+ % (:yspeed state))))))
 
 (defn key-press [key state]
   (condp = key
@@ -137,6 +143,8 @@
              (do
                (enable :lighting)
                (assoc state :light true)))
+    "w"    (assoc state :zoom-in true)
+    "s"    (assoc state :zoom-out true)
     "f"    (update-in state [:filter] #(mod (inc %) 3))
     :up    (update-in state [:xspeed] #(- % 0.1))
     :down  (update-in state [:xspeed] #(+ % 0.1))
@@ -144,10 +152,10 @@
     :right (update-in state [:yspeed] #(+ % 0.1))
     state))
 
-(defn key-type [key state]
+(defn key-release [key state]
   (condp = key
-    "w" (update-in state [:z] #(+ % 0.2))
-    "s" (update-in state [:z] #(- % 0.2))
+    "w" (dissoc state :zoom-in)
+    "s" (dissoc state :zoom-out)
     state))
 
 (defn display [[delta time] state]
@@ -166,7 +174,7 @@
 (def options {:reshape reshape
               :update update
               :key-press key-press
-              :key-type key-type
+              :key-release key-release
               :display display-proxy
               :init init})
 
