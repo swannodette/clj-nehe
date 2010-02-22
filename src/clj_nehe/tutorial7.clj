@@ -13,7 +13,6 @@
 (def *image* (ImageIO/read (File. (pwd) "/src/clj_nehe/Crate.bmp")))
 (def *width* 640)
 (def *height* 480)
-(def *light* (atom true))
 (def *light-ambient* [0.5 0.5 0.5 1])
 (def *light-diffuse* [1 1 1 1])
 (def *light-position* [0 0 2 1])
@@ -107,6 +106,7 @@
          :position *light-position*)
   (enable :light1)
   (-> state
+      (assoc :light false)
       (assoc :xrot 0)
       (assoc :yrot 0)
       (assoc :xspeed 0)
@@ -131,15 +131,13 @@
 
 (defn key-press [key state]
   (condp = key
-    "l"    (if @*light*
+    "l"    (if (:light state)
              (do
-               (reset! *light* false)
                (disable :lighting)
-               state)
+               (assoc state :light false))
              (do
-               (reset! *light* true)
                (enable :lighting)
-               state))
+               (assoc state :light true)))
     "f"    (update-in state [:filter] #(mod (inc %) 3))
     :up    (update-in state [:xspeed] #(- % 0.1))
     :down  (update-in state [:xspeed] #(+ % 0.1))
