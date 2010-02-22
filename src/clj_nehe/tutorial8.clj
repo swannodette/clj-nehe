@@ -107,19 +107,18 @@
   (enable :light1)
   (color 1 1 1 5)
   (blend-func :src-alpha :one)
-  (-> state
-      (assoc :light false)
-      (assoc :blend true)
-      (assoc :xrot 0)
-      (assoc :yrot 0)
-      (assoc :xspeed 0)
-      (assoc :yspeed 0)
-      (assoc :z -5)
-      (assoc :filter 0)
-      (assoc :texs
-        [(load-texture-from-image *image* false :nearest)
-         (load-texture-from-image *image* false :linear)
-         (load-texture-from-image *image* true)])))
+  (merge state
+         {:light false
+          :blend true
+          :xrot 0
+          :yrot 0
+          :xspeed 0
+          :yspeed 0
+          :z -5
+          :filter 0
+          :texs [(load-texture-from-image *image* false :nearest)
+                 (load-texture-from-image *image* false :linear)
+                 (load-texture-from-image *image* true)]}))
 
 (defn reshape [[x y width height] state]
   (viewport 0 0 *width* *height*)
