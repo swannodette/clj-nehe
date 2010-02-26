@@ -44,7 +44,7 @@
 
 (defn init [state]
   (app/title! "Nehe Tutorial 11")
-  (app/vsync! false)
+  (app/vsync! true)
   (app/display-mode! *width* *height*)
   (enable :texture-2d)
   (shade-model :smooth)
@@ -86,19 +86,14 @@
              fy  (/ j 44.0)
              fxb (/ (inc i) 44.0)
              fyb (/ (inc j) 44.0)
-             tex-coords [[fx fy] [fx fyb] [fxb fyb] fxb fy]
+             tex-coords [[fx fy] [fx fyb] [fxb fyb] [fxb fy]]
              x   (* i 45)
              y   j
              vertices [(nth points (+ x y))
                        (nth points (+ x (inc y)))
                        (nth points (+ (inc x) (inc y)))
                        (nth points (+ (inc x) y))]]
-         (map tex-coord-and-vertex (interleave tex-coords vertices))))))
-  (draw-quads
-   (vertex -1 -1 0)
-   (vertex 1 -1 0)
-   (vertex 1 1 0)
-   (vertex -1 1 0))
+         (doall (map tex-coord-and-vertex (partition 2 (interleave tex-coords vertices))))))))
   (app/repaint!))
 
 (defn display-proxy [& args]
