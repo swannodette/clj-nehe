@@ -106,20 +106,20 @@
 
 (defn update [[delta time] state]
   (let [state (if (state :zoom-in)
-                (update-in state [:z] #(+ % 0.002))
+                (update-in state [:zoom] #(+ % 0.02))
                 state)
         state (if (state :zoom-out)
-                (update-in state [:z] #(- % 0.002))
+                (update-in state [:zoom] #(- % 0.02))
                 state)
         state (if (state :tilt-up)
-                (update-in state [:tilt] #(+ % 0.005))
+                (update-in state [:tilt] #(+ % 0.05))
                 state)
         state (if (state :tilt-down)
-                (update-in state [:tilt] #(- % 0.005))
+                (update-in state [:tilt] #(- % 0.05))
                 state)]
    (-> state
        (update-in [:stars] update-stars)
-       (update-in [:spin] #(+ % 0.001)))))
+       (update-in [:spin] #(+ % 0.1)))))
 
 (defn key-press [key state]
   (condp = key
@@ -142,22 +142,24 @@
   (translate 0 0 (:zoom state))
   (rotate (:tilt state) 1 0 0)
   (with-texture (:texture state)
-    (doseq [[i star] (indexed (:stars state))]
-      (push-matrix
-        (rotate (:angle star) 0 1 0)
-        (translate (:dist star) 0 0)
-        (rotate (- (:angle star)) 0 1 0)
-        (rotate (- (:tilt state)) 1 0 0)
-       (if (:twinkle state)
-         (let [n (mod (dec i) *num*)
-               {r :r g :g b :b} (*stars* n)]
-           (color-byte r g b 255)
-           (draw-quads
-            (doall (map tex-coord-and-vertex (partition 2 *vertices*))))))
-       (rotate (:spin state) 0 0 1)
-       (color-byte (:r star) (:g star) (:b star) 255)
-       (draw-quads
-        (doall (map tex-coord-and-vertex (partition 2 *vertices*)))))))
+    (let [stars (:stars state)
+          c     (count stars)]
+      (doseq [[i star] (indexed (:stars state))]
+        (push-matrix
+         (rotate (:angle star) 0 1 0)
+         (translate (:dist star) 0 0)
+         (rotate (- (:angle star)) 0 1 0)
+         (rotate (- (:tilt state)) 1 0 0)
+         (if (:twinkle state)
+           (let [n (mod (dec i) c)
+                 {r :r g :g b :b} (nth stars n)]
+             (color-byte r g b 255)
+             (draw-quads
+              (doall (map tex-coord-and-vertex (partition 2 *vertices*))))))
+         (rotate (:spin state) 0 0 1)
+         (color-byte (:r star) (:g star) (:b star) 255)
+         (draw-quads
+          (doall (map tex-coord-and-vertex (partition 2 *vertices*))))))))
   (app/repaint!))
 
 (defn display-proxy [& args]
