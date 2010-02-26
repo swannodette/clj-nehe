@@ -48,18 +48,17 @@
   (shade-model :smooth)
   (clear-color 0 0 0 0.5)
   (clear-depth 1)
-  ;(enable :depth-test)
-  ;(depth-test :lequal)
-  ;(gl-polygon-mode :back :fill)
-  ;(gl-polygon-mode :front :line)
+  (enable :depth-test)
+  (depth-test :lequal)
+  (gl-polygon-mode :back :fill)
+  (gl-polygon-mode :front :line)
   (hint :perspective-correction-hint :nicest)
   (-> state
       (assoc :xrot 0)
       (assoc :yrot 0)
       (assoc :zrot 0)
       (assoc :points *points*)
-      ;(assoc :texture (load-texture-from-file *image-path*))
-      ))
+      (assoc :texture (load-texture-from-file *image-path*))))
 
 (defn reshape [[x y width height] state]
   (viewport 0 0 width height)
@@ -75,30 +74,29 @@
 
 (defn display [[delta time] {points :points :as state}]
   (translate 0 0 -5)
-;;   (rotate (:xrot state) 1 0 0)
-;;   (rotate (:yrot state) 0 1 0)
-;;   (rotate (:zrot state) 0 0 1)
-;;   (with-texture (:texture state)
-;;     (draw-quads
-;;      (doseq [i (range 45) j (range 45)]
-;;        (let [fx  (/ i 44.0)
-;;              fy  (/ j 44.0)
-;;              fxb (/ (inc i) 44.0)
-;;              fyb (/ (inc j) 44.0)
-;;              tex-coords [[fx fy] [fx fyb] [fxb fyb] fxb fy]
-;;              x   (* i 45)
-;;              y   j
-;;              vertices [(nth points (+ x y))
-;;                        (nth points (+ x (inc y)))
-;;                        (nth points (+ (inc x) (inc y)))
-;;                        (nth points (+ (inc x) y))]]
-;;          (map tex-coord-and-vertex (interleave tex-coords vertices))))))
-  (color 1 0 0 1)
+  (rotate (:xrot state) 1 0 0)
+  (rotate (:yrot state) 0 1 0)
+  (rotate (:zrot state) 0 0 1)
+  (with-texture (:texture state)
+    (draw-quads
+     (doseq [i (range 44) j (range 44)]
+       (let [fx  (/ i 44.0)
+             fy  (/ j 44.0)
+             fxb (/ (inc i) 44.0)
+             fyb (/ (inc j) 44.0)
+             tex-coords [[fx fy] [fx fyb] [fxb fyb] fxb fy]
+             x   (* i 45)
+             y   j
+             vertices [(nth points (+ x y))
+                       (nth points (+ x (inc y)))
+                       (nth points (+ (inc x) (inc y)))
+                       (nth points (+ (inc x) y))]]
+         (map tex-coord-and-vertex (interleave tex-coords vertices))))))
   (draw-quads
-   (vector -1 -1 0)
-   (vector 1 -1 0)
-   (vector 1 1 0)
-   (vector -1 1 0))
+   (vertex -1 -1 0)
+   (vertex 1 -1 0)
+   (vertex 1 1 0)
+   (vertex -1 1 0))
   (app/repaint!))
 
 (defn display-proxy [& args]
