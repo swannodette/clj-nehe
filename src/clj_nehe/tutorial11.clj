@@ -66,6 +66,7 @@
       (assoc :xrot 0)
       (assoc :yrot 0)
       (assoc :zrot 0)
+      (assoc :xys *xys*)
       (assoc :zs *zs*)
       (assoc :texture (load-texture-from-file *image-path*))))
 
@@ -75,12 +76,6 @@
   (load-identity)
   state)
 
-(defn wave [points]
-  (let [n  (count points)
-        vs (map #(subvec % 0 2) points)
-        zs (map #(nth % 2) points)]
-    (into [] (map conj vs (rotatev zs)))))
-
 (defn update [[delta time] state]
    (-> state
        (update-in [:xrot] #(+ % 0.3))
@@ -88,14 +83,14 @@
        (update-in [:zrot] #(+ % 0.4))
        (update-in [:zs] #(rotatev %))))
 
-(defn display [[delta time] {zs :zs :as state}]
+(defn display [[delta time] {xys :xys zs :zs :as state}]
   (translate 0 0 -12)
   (rotate (:xrot state) 1 0 0)
   (rotate (:yrot state) 0 1 0)
   (rotate (:zrot state) 0 0 1)
   (with-texture (:texture state)
     (draw-quads
-     (let [points (into [] (map conj *xys* (flatten (repeat 45 zs))))]
+     (let [points (into [] (map conj xys (cycle zs)))]
       (doseq [i (range 44) j (range 44)]
         (let [fx  (/ i 44.0)
               fy  (/ j 44.0)
