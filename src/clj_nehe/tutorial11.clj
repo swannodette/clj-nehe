@@ -12,11 +12,13 @@
 (def *width* 640)
 (def *height* 480)
 
+;; will be very slow if we don't put our data into a vector
 (def *points*
-     (for [x (range 45) y (range 45)]
-       [(- (/ x 5.0) 4.5)
-        (- (/ y 5.0) 4.5)
-        (* (* (Math/sin (/ (* (/ x 5.0) 40.0) 360.0)) Math/PI) 2.0)]))
+     (into []
+           (for [x (range 45) y (range 45)]
+             [(- (/ x 5.0) 4.5)
+              (- (/ y 5.0) 4.5)
+              (* (* (Math/sin (/ (* (/ x 5.0) 40.0) 360.0)) Math/PI) 2.0)])))
 
 ;; -----------------------------------------------------------------------------
 ;; Helpers
