@@ -19,7 +19,7 @@
 (def *stars*
      (for [x (range *num*)]
        {:angle 0
-        :dist (* x 5)
+        :dist (* (/ x *num*) 5)
         :r (rand-int 255)
         :g (rand-int 255)
         :b (rand-int 255)}))
@@ -104,7 +104,7 @@
   (let [c (count stars)]
     (map #(update-star % c) (indexed stars))))
 
-(defn update [[delta time] state]
+(defn update [[delta time] {stars :start :as state}]
   (let [state (if (state :zoom-in)
                 (update-in state [:zoom] #(+ % 0.02))
                 state)
@@ -119,7 +119,7 @@
                 state)]
    (-> state
        (update-in [:stars] update-stars)
-       (update-in [:spin] #(+ % 0.1)))))
+       (update-in [:spin] #(+ % (* 0.01 (count stars)))))))
 
 (defn key-press [key state]
   (condp = key
@@ -139,13 +139,13 @@
     state))
 
 (defn display [[delta time] state]
-  (translate 0 0 (:zoom state))
-  (rotate (:tilt state) 1 0 0)
   (with-texture (:texture state)
     (let [stars (:stars state)
           c     (count stars)]
-      (doseq [[i star] (indexed (:stars state))]
+      (doseq [[i star] (indexed stars)]
         (push-matrix
+         (translate 0 0 (:zoom state))
+         (rotate (:tilt state) 1 0 0)
          (rotate (:angle star) 0 1 0)
          (translate (:dist star) 0 0)
          (rotate (- (:angle star)) 0 1 0)
@@ -156,7 +156,7 @@
              (color-byte r g b 255)
              (draw-quads
               (doall (map tex-coord-and-vertex (partition 2 *vertices*))))))
-         (rotate (:spin state) 0 0 1)
+         (rotate (+ (* i 0.01) (:spin state)) 0 0 1)
          (color-byte (:r star) (:g star) (:b star) 255)
          (draw-quads
           (doall (map tex-coord-and-vertex (partition 2 *vertices*))))))))
