@@ -18,7 +18,7 @@
            (for [x (range 45) y (range 45)]
              [(- (/ x 5.0) 4.5)
               (- (/ y 5.0) 4.5)
-              (* (* (Math/sin (/ (* (/ x 5.0) 40.0) 360.0)) Math/PI) 2.0)])))
+              (Math/sin (* (/ (* (/ x 5.0) 40.0) 360.0) (* Math/PI 2.0)))])))
 
 ;; -----------------------------------------------------------------------------
 ;; Helpers
@@ -75,7 +75,7 @@
        (update-in [:zrot] #(+ % 0.4))))
 
 (defn display [[delta time] {points :points :as state}]
-  (translate 0 0 -5)
+  (translate 0 0 -12)
   (rotate (:xrot state) 1 0 0)
   (rotate (:yrot state) 0 1 0)
   (rotate (:zrot state) 0 0 1)
