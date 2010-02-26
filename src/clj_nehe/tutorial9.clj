@@ -59,7 +59,6 @@
 ;; -----------------------------------------------------------------------------
 ;; Fns
 
-;; WTF, load-texture-from-file make the square not appear
 (defn init [state]
   (app/title! "Nehe Tutorial 9")
   (app/vsync! false)
