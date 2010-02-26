@@ -87,12 +87,10 @@
              fxb (/ (inc i) 44.0)
              fyb (/ (inc j) 44.0)
              tex-coords [[fx fy] [fx fyb] [fxb fyb] [fxb fy]]
-             x   (* i 45)
-             y   j
-             vertices [(nth points (+ x y))
-                       (nth points (+ x (inc y)))
-                       (nth points (+ (inc x) (inc y)))
-                       (nth points (+ (inc x) y))]]
+             vertices [(nth points (+ (* i 45) j))
+                       (nth points (+ (* i 45) (inc j)))
+                       (nth points (+ (* (inc i) 45) (inc j)))
+                       (nth points (+ (* (inc i) 45) j))]]
          (doall (map tex-coord-and-vertex (partition 2 (interleave tex-coords vertices))))))))
   (app/repaint!))
 
