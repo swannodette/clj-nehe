@@ -24,12 +24,10 @@
         :b (rand-int 255)}))
 
 (def *vertices*
-     [
-      [0 0] [-1 -1 0]
+     [[0 0] [-1 -1 0]
       [1 0] [1 -1 0]
       [1 1] [1 1 0]
-      [0 1] [-1 1 0]
-      ])
+      [0 1] [-1 1 0]])
 
 ;; -----------------------------------------------------------------------------
 ;; Helpers
@@ -43,7 +41,7 @@
 (defn tex-coord [x y]
   (gl-tex-coord-2 x y))
 
-(def normal-and-4tex-coord-and-vertices
+(def tex-coord-and-vertex
      (series tex-coord vertex))
 
 (defn color-byte [r g b a]
@@ -103,45 +101,67 @@
    (map #(update-star % c) (indexed stars))))
 
 (defn update [[delta time] state]
-  (-> state
-    (update-in [:stars] update-stars)
-    (update-in [:spin] #(+ % 0.1))))
+  (let [state (if (state :zoom-in)
+                (update-in state [:z] #(+ % 0.002))
+                state)
+        state (if (state :zoom-out)
+                (update-in state [:z] #(- % 0.002))
+                state)
+        state (if (state :tilt-up)
+                (update-in state [:tilt] #(+ % 0.005))
+                state)
+        state (if (state :tilt-down)
+                (update-in state [:tilt] #(- % 0.005))
+                state)]
+   (-> state
+       (update-in [:stars] update-stars)
+       (update-in [:spin] #(+ % 0.1)))))
 
 (defn key-press [key state]
   (condp = key
+    "t"    (update-in state [:twinkle] #(not %))
+    "w"    (assoc state :zoom-in true)
+    "s"    (assoc state :zoom-out true)
+    :up    (assoc state :tilt-up true)
+    :down  (assoc state :tilt-down true)
     state))
 
 (defn key-release [key state]
   (condp = key
+    "w"    (dissoc state :zoom-in)
+    "s"    (dissoc state :zoom-out)
+    :up    (dissoc state :tilt-up)
+    :down  (dissoc state :tilt-down)
     state))
 
 (defn display [[delta time] state]
-  (with-texture ((:texs state) (:filter state))
+  (with-texture (:texture state)
     (doseq [[i star] (indexed (:stars state))]
-     (push-matrix
-      (translate 0 0 (:zoom state))
-      (rotate (:tilt state) 1 0 0)
-      (rotate (:angle star) 0 1 0)
-      (translate (:dist star) 0 0)
-      (rotate (- (:angle star)) 0 1 0)
-      (rotate (- (:tilt star)) 1 0 0)
-      (if (:twinkle state)
-        (let [n (mod (dec i) *num*)
-              {r :r g :g b :b} (*stars* n)]
-          (color-byte r g b 1)
-          (draw-quads
-           (doall (map tex-coord-and-vertex (partition 2 *vertices*))))))
-      (rotate (:spin state) 0 0 1)
-      (color-byte (:r star) (:g star) (:b star) 1)
-      (draw-quads
-       (doall (map tex-coord-and-vertex (parititon 2 *vertices*)))))))
+      (push-matrix
+       (translate 0 0 (:zoom state))
+       (rotate (:tilt state) 1 0 0)
+       (rotate (:angle star) 0 1 0)
+       (translate (:dist star) 0 0)
+       (rotate (- (:angle star)) 0 1 0)
+       (rotate (- (:tilt state)) 1 0 0)
+       (if (:twinkle state)
+         (let [n (mod (dec i) *num*)
+               {r :r g :g b :b} (*stars* n)]
+           (color-byte r g b 1)
+                  (draw-quads
+                   (doall (map tex-coord-and-vertex (partition 2 *vertices*))))))
+       (rotate (:spin state) 0 0 1)
+       (color-byte (:r star) (:g star) (:b star) 1)
+       (draw-quads
+        (doall (map tex-coord-and-vertex (partition 2 *vertices*))))
+       )))
   (app/repaint!))
 
 (defn display-proxy [& args]
   (apply display args))
 
 (def options {:reshape reshape
-              :update update
+              ;:update update
               :key-press key-press
               :key-release key-release
               :display display-proxy
