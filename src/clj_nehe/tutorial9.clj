@@ -1,4 +1,4 @@
-(ns clj-nehe.tutorial8
+(ns clj-nehe.tutorial9
   (:use [penumbra opengl geometry]
         [penumbra.opengl.texture :only [gl-tex-coord-2]]
         [penumbra.opengl.core :only [gl-import]])
@@ -12,6 +12,7 @@
 ;; Vars
 
 (def *image-path* (str (pwd) "/src/clj_nehe/Star.bmp"))
+(def *image* (ImageIO/read (File. (pwd) "/src/clj_nehe/Star.bmp")))
 (def *width* 640)
 (def *height* 480)
 (def *num* 50)
@@ -45,7 +46,10 @@
      (series tex-coord vertex))
 
 (defn color-byte [r g b a]
-  (color (/ r 255.0) (/ g 255.0) (/ b 255.0) (/ a 255.0)))
+  (let [r (/ r 255.0)
+        g (/ g 255.0)
+        b (/ b 255.0)]
+    (color r g b (/ a 255.0))))
 
 ;; -----------------------------------------------------------------------------
 ;; Import
@@ -55,24 +59,25 @@
 ;; -----------------------------------------------------------------------------
 ;; Fns
 
+;; WTF, load-texture-from-file make the square not appear
 (defn init [state]
-  (app/title! "Nehe Tutorial 8")
+  (app/title! "Nehe Tutorial 9")
   (app/vsync! false)
   (app/display-mode! *width* *height*)
   (enable :texture-2d)
   (shade-model :smooth)
   (clear-color 0 0 0 0.5)
   (clear-depth 1)
-  (enable :blend)
   (hint :perspective-correction-hint :nicest)
   (blend-func :src-alpha :one)
+  (enable :blend)
   (merge state
          {:fullscreen false
           :twinkle false
           :zoom -15
           :tilt 90
           :spin 0
-          :texture (load-texture-from-file *image-path*)
+          :texture (load-texture-from-image *image*)
           :stars *stars*}))
 
 (defn reshape [[x y width height] state]
@@ -93,12 +98,12 @@
 (defn update-star [[i star] n]
   (-> star
    (update-in [:angle] #(+ % (/ (double i) n)))
-   (update-in [:dist] #(- % 0.1))
+   (update-in [:dist] #(- % 0.01))
    (reset-star)))
 
 (defn update-stars [stars]
   (let [c (count stars)]
-   (map #(update-star % c) (indexed stars))))
+    (map #(update-star % c) (indexed stars))))
 
 (defn update [[delta time] state]
   (let [state (if (state :zoom-in)
@@ -115,7 +120,7 @@
                 state)]
    (-> state
        (update-in [:stars] update-stars)
-       (update-in [:spin] #(+ % 0.1)))))
+       (update-in [:spin] #(+ % 0.001)))))
 
 (defn key-press [key state]
   (condp = key
@@ -135,33 +140,32 @@
     state))
 
 (defn display [[delta time] state]
+  (translate 0 0 (:zoom state))
+  (rotate (:tilt state) 1 0 0)
   (with-texture (:texture state)
     (doseq [[i star] (indexed (:stars state))]
       (push-matrix
-       (translate 0 0 (:zoom state))
-       (rotate (:tilt state) 1 0 0)
-       (rotate (:angle star) 0 1 0)
-       (translate (:dist star) 0 0)
-       (rotate (- (:angle star)) 0 1 0)
-       (rotate (- (:tilt state)) 1 0 0)
+        (rotate (:angle star) 0 1 0)
+        (translate (:dist star) 0 0)
+        (rotate (- (:angle star)) 0 1 0)
+        (rotate (- (:tilt state)) 1 0 0)
        (if (:twinkle state)
          (let [n (mod (dec i) *num*)
                {r :r g :g b :b} (*stars* n)]
-           (color-byte r g b 1)
-                  (draw-quads
-                   (doall (map tex-coord-and-vertex (partition 2 *vertices*))))))
+           (color-byte r g b 255)
+           (draw-quads
+            (doall (map tex-coord-and-vertex (partition 2 *vertices*))))))
        (rotate (:spin state) 0 0 1)
-       (color-byte (:r star) (:g star) (:b star) 1)
+       (color-byte (:r star) (:g star) (:b star) 255)
        (draw-quads
-        (doall (map tex-coord-and-vertex (partition 2 *vertices*))))
-       )))
+        (doall (map tex-coord-and-vertex (partition 2 *vertices*)))))))
   (app/repaint!))
 
 (defn display-proxy [& args]
   (apply display args))
 
 (def options {:reshape reshape
-              ;:update update
+              :update update
               :key-press key-press
               :key-release key-release
               :display display-proxy
