@@ -81,10 +81,9 @@
        (update-in [:xrot] #(+ % 0.3))
        (update-in [:yrot] #(+ % 0.2))
        (update-in [:zrot] #(+ % 0.4))
-       (update-in [:zs] #(rotatev %))
        (update-in [:points] next)))
 
-(defn display [[delta time] {xys :xys zs :zs :as state}]
+(defn display [[delta time] state]
   (translate 0 0 -12)
   (rotate (:xrot state) 1 0 0)
   (rotate (:yrot state) 0 1 0)
