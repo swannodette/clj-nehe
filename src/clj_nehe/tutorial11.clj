@@ -44,9 +44,6 @@
 
 (def tex-coord-and-vertex (series tex-coord vertex))
 
-(defn rotatev [v]
-     (into [] (concat (rest v) [(first v)])))
-
 ;; -----------------------------------------------------------------------------
 ;; Import
 
