@@ -2,11 +2,8 @@
   (:use [penumbra opengl geometry]
         [penumbra.opengl.texture :only [gl-tex-coord-2]]
         [penumbra.opengl.core :only [gl-import]])
-  (:use [clojure.contrib.duck-streams :only [pwd]]
-        [clojure.contrib.seq-utils :only [flatten]])
+  (:use [clojure.contrib.duck-streams :only [pwd]])
   (:require [penumbra.app :as app]))
-
-(set! *warn-on-reflection* true)
 
 ;; -----------------------------------------------------------------------------
 ;; Vars
