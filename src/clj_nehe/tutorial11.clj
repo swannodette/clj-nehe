@@ -62,13 +62,13 @@
   (gl-polygon-mode :back :fill)
   (gl-polygon-mode :front :line)
   (hint :perspective-correction-hint :nicest)
-  (-> state
-      (assoc :xrot 0)
-      (assoc :yrot 0)
-      (assoc :zrot 0)
-      (assoc :points (points))
-      (assoc :tex-points (tex-points 45))
-      (assoc :texture (load-texture-from-file *image-path*))))
+  (merge state 
+         {:xrot 0
+          :yrot 0
+          :zrot 0
+          :points (points)
+          :tex-points (tex-points 45)
+          :texture (load-texture-from-file *image-path*)}))
 
 (defn reshape [[x y width height] state]
   (viewport 0 0 width height)
