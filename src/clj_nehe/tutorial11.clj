@@ -98,10 +98,10 @@
                bl (+ i (inc j))
                br (+ (+ i 45) (inc j))
                tr (+ (+ i 45) j)
-               vs [[(nth tex-points tl) (nth points tl)]
-                   [(nth tex-points bl) (nth points bl)]
-                   [(nth tex-points br) (nth points br)]
-                   [(nth tex-points tr) (nth points tr)]]]
+               vs [[(tex-points tl) (points tl)]
+                   [(tex-points bl) (points bl)]
+                   [(tex-points br) (points br)]
+                   [(tex-points tr) (points tr)]]]
            (doall (map tex-coord-and-vertex vs)))))))
   (app/repaint!))
 
