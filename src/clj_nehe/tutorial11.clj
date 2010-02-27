@@ -6,6 +6,8 @@
         [clojure.contrib.seq-utils :only [flatten]])
   (:require [penumbra.app :as app]))
 
+(set! *warn-on-reflection* true)
+
 ;; -----------------------------------------------------------------------------
 ;; Vars
 
@@ -13,16 +15,16 @@
 (def *width* 640)
 (def *height* 480)
 
-(def *xys*
-     (into []
-           (for [x (range 45) y (range 45)]
+(defn gen-points [n]
+  (into [] (for [x (range 45) y (range 45)]
              [(- (/ x 5.0) 4.5)
-              (- (/ y 5.0) 4.5)])))
+              (- (/ y 5.0) 4.5)
+              (Math/sin (* (/ (* (/ (mod (+ x n) 45) 5.0) 40.0) 360.0) (* Math/PI 2.0)))])))
 
-(def *zs*
-     (into []
-           (for [x (range 45)]
-                (Math/sin (* (/ (* (/ x 5.0) 40.0) 360.0) (* Math/PI 2.0))))))
+(defn points []
+  ((fn points* [n]
+     (lazy-seq
+      (cons (gen-points n) (points* (inc n))))) 0))
 
 ;; -----------------------------------------------------------------------------
 ;; Helpers
@@ -66,8 +68,7 @@
       (assoc :xrot 0)
       (assoc :yrot 0)
       (assoc :zrot 0)
-      (assoc :xys *xys*)
-      (assoc :zs *zs*)
+      (assoc :points (points))
       (assoc :texture (load-texture-from-file *image-path*))))
 
 (defn reshape [[x y width height] state]
@@ -81,16 +82,18 @@
        (update-in [:xrot] #(+ % 0.3))
        (update-in [:yrot] #(+ % 0.2))
        (update-in [:zrot] #(+ % 0.4))
-       (update-in [:zs] #(rotatev %))))
+       (update-in [:zs] #(rotatev %))
+       (update-in [:points] next)))
 
 (defn display [[delta time] {xys :xys zs :zs :as state}]
+  (println (str (int (/ 1 delta)) " fps") 0 0)
   (translate 0 0 -12)
   (rotate (:xrot state) 1 0 0)
   (rotate (:yrot state) 0 1 0)
   (rotate (:zrot state) 0 0 1)
   (with-texture (:texture state)
     (draw-quads
-     (let [points (into [] (map conj xys (cycle zs)))]
+     (let [points (first (:points state))]
       (doseq [i (range 44) j (range 44)]
         (let [fx  (/ i 44.0)
               fy  (/ j 44.0)
@@ -115,4 +118,6 @@
 (defn start []
   (app/start options {}))
 
-(start)
+(comment
+  (start)
+ )
