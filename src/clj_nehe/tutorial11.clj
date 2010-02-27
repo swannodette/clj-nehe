@@ -26,6 +26,10 @@
      (lazy-seq
       (cons (gen-points n) (points* (inc n))))) 0))
 
+(defn tex-points [n]
+  (into [] (for [x (range n) y (range n)]
+             [(/ x (float n)) (/ y (float n))])))
+
 ;; -----------------------------------------------------------------------------
 ;; Helpers
 
@@ -53,7 +57,7 @@
 
 (defn init [state]
   (app/title! "Nehe Tutorial 11")
-  (app/vsync! true)
+  (app/vsync! false)
   (app/display-mode! *width* *height*)
   (enable :texture-2d)
   (shade-model :smooth)
@@ -69,6 +73,7 @@
       (assoc :yrot 0)
       (assoc :zrot 0)
       (assoc :points (points))
+      (assoc :tex-points (tex-points 45))
       (assoc :texture (load-texture-from-file *image-path*))))
 
 (defn reshape [[x y width height] state]
@@ -86,25 +91,24 @@
        (update-in [:points] next)))
 
 (defn display [[delta time] {xys :xys zs :zs :as state}]
-  (println (str (int (/ 1 delta)) " fps") 0 0)
   (translate 0 0 -12)
   (rotate (:xrot state) 1 0 0)
   (rotate (:yrot state) 0 1 0)
   (rotate (:zrot state) 0 0 1)
   (with-texture (:texture state)
     (draw-quads
-     (let [points (first (:points state))]
-      (doseq [i (range 44) j (range 44)]
-        (let [fx  (/ i 44.0)
-              fy  (/ j 44.0)
-              fxb (/ (inc i) 44.0)
-              fyb (/ (inc j) 44.0)
-              tex-coords [[fx fy] [fx fyb] [fxb fyb] [fxb fy]]
-              vertices [(nth points (+ (* i 45) j))
-                        (nth points (+ (* i 45) (inc j)))
-                        (nth points (+ (* (inc i) 45) (inc j)))
-                        (nth points (+ (* (inc i) 45) j))]]
-          (doall (map tex-coord-and-vertex (partition 2 (interleave tex-coords vertices)))))))))
+     (let [tex-points (:tex-points state)
+           points (first (:points state))]
+       (doseq [i (range 0 1980 45) j (range 44)]
+         (let [tl (+ i j)
+               bl (+ i (inc j))
+               br (+ (+ i 45) (inc j))
+               tr (+ (+ i 45) j)
+               vs [[(nth tex-points tl) (nth points tl)]
+                   [(nth tex-points bl) (nth points bl)]
+                   [(nth tex-points br) (nth points br)]
+                   [(nth tex-points tr) (nth points tr)]]]
+           (doall (map tex-coord-and-vertex vs)))))))
   (app/repaint!))
 
 (defn display-proxy [& args]
@@ -118,6 +122,4 @@
 (defn start []
   (app/start options {}))
 
-(comment
-  (start)
- )
+(start)
