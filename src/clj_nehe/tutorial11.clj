@@ -51,7 +51,7 @@
 
 (defn init [state]
   (app/title! "Nehe Tutorial 11")
-  (app/vsync! false)
+  (app/vsync! true)
   (app/display-mode! *width* *height*)
   (enable :texture-2d)
   (shade-model :smooth)
@@ -63,7 +63,8 @@
   (gl-polygon-mode :front :line)
   (hint :perspective-correction-hint :nicest)
   (merge state 
-         {:xrot 0
+         {:fullscreen false
+          :xrot 0
           :yrot 0
           :zrot 0
           :points (points)
@@ -82,6 +83,13 @@
        (update-in [:yrot] #(+ % 0.2))
        (update-in [:zrot] #(+ % 0.4))
        (update-in [:points] next)))
+
+(defn key-press [key state]
+  (condp = key
+    :f1 (let [state (update-in state [:fullscreen] #(not %))]
+          (app/fullscreen! (:fullscreen state))
+          state)
+    state))
 
 (defn display [[delta time] state]
   (translate 0 0 -12)
@@ -109,6 +117,7 @@
 
 (def options {:reshape reshape
               :update update
+              :key-press key-press
               :display display-proxy
               :init init})
 

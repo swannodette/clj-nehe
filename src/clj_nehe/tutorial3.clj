@@ -48,13 +48,20 @@
   (enable :depth-test)
   (depth-test :lequal)
   (hint :perspective-correction-hint :nicest)
-  state)
+  (assoc state :fullscreen false))
 
 (defn reshape [[x y width height] state]
   (viewport 0 0 *width* *height*)
   (frustum-view 45 (/ (double *width*) *height*) 0.1 100)
   (load-identity)
   state)
+
+(defn key-press [key state]
+  (condp = key
+    :f1 (let [state (update-in state [:fullscreen] #(not %))]
+          (app/fullscreen! (:fullscreen state))
+          state)
+    state))
 
 (defn display [[delta time] state]
   (translate -1.5 0 -6)
@@ -71,6 +78,7 @@
   (apply display args))
 
 (def options {:reshape reshape
+              :key-press key-press
               :display display-proxy
               :init init})
 

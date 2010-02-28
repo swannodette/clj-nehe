@@ -63,6 +63,13 @@
        (update-in [:rtri] #(+ % 0.2))
        (update-in [:rquad] #(+ % 0.15))))
 
+(defn key-press [key state]
+  (condp = key
+    :f1 (let [state (update-in state [:fullscreen] #(not %))]
+          (app/fullscreen! (:fullscreen state))
+          state)
+    state))
+
 (defn display [[delta time] state]
   (translate -1.5 0 -6)
   (rotate (:rtri state) 0 1 0)
@@ -83,6 +90,7 @@
 
 (def options {:reshape reshape
               :update update
+              :key-press key-press
               :display display-proxy
               :init init})
 

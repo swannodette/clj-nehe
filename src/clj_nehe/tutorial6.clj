@@ -53,7 +53,6 @@
 
 ;; -----------------------------------------------------------------------------
 ;; Helpers
-
 (defmacro series [& args]
   (let [syms (take (count args) (repeatedly gensym))
         forms (map #(cons 'apply %) (partition 2 (interleave args syms)))]
@@ -84,11 +83,12 @@
   (enable :depth-test)
   (depth-test :lequal)
   (hint :perspective-correction-hint :nicest)
-  (-> state
-      (assoc :xrot 0)
-      (assoc :yrot 0)
-      (assoc :zrot 0)
-      (assoc :texture (load-texture-from-file *image-path*))))
+  (merge state
+          {:fullscreen false
+           :xrot 0
+           :yrot 0
+           :zrot 0
+           :texture (load-texture-from-file *image-path*)}))
 
 (defn reshape [[x y width height] state]
   (viewport 0 0 *width* *height*)
@@ -101,6 +101,13 @@
        (update-in [:xrot] #(+ % 0.3))
        (update-in [:yrot] #(+ % 0.2))
        (update-in [:zrot] #(+ % 0.4))))
+
+(defn key-press [key state]
+  (condp = key
+    :f1 (let [state (update-in state [:fullscreen] #(not %))]
+          (app/fullscreen! (:fullscreen state))
+          state)
+    state))
 
 (defn display [[delta time] state]
   (translate 0 0 -5)
@@ -118,6 +125,7 @@
 
 (def options {:reshape reshape
               :update update
+              :key-press key-press
               :display display-proxy
               :init init})
 

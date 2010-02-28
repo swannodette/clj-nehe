@@ -139,6 +139,9 @@
 
 (defn key-press [key state]
   (condp = key
+    :f1    (let [state (update-in state [:fullscreen] #(not %))]
+             (app/fullscreen! (:fullscreen state))
+             state)
     "l"    (if (:light state)
              (do
                (disable :lighting)

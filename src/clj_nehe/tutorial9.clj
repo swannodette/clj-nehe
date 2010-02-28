@@ -123,7 +123,7 @@
 
 (defn key-press [key state]
   (condp = key
-    "f"    (let [state (update-in state [:fullscreen] #(not %))]
+    :f1    (let [state (update-in state [:fullscreen] #(not %))]
              (app/fullscreen! (:fullscreen state))
              state)
     "t"    (update-in state [:twinkle] #(not %))

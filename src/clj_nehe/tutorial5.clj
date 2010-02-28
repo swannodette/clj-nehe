@@ -122,6 +122,7 @@
   (depth-test :lequal)
   (hint :perspective-correction-hint :nicest)
   (-> state
+      (assoc :fullscreen false)
       (assoc :rpyramid 0)
       (assoc :rcube 0)))
 
@@ -135,6 +136,13 @@
    (-> state
        (update-in [:rpyramid] #(+ % 0.2))
        (update-in [:rcube] #(+ % 0.15))))
+
+(defn key-press [key state]
+  (condp = key
+    :f1 (let [state (update-in state [:fullscreen] #(not %))]
+          (app/fullscreen! (:fullscreen state))
+          state)
+    state))
 
 (defn display [[delta time] state]
   (translate -1.5 0 -6)
@@ -157,6 +165,7 @@
 
 (def options {:reshape reshape
               :update update
+              :key-press key-press
               :display display-proxy
               :init init})
 
