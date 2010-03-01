@@ -176,6 +176,7 @@
     state))
 
 (defn display [[delta time] state]
+  (clear 0.5 0.5 0.5 1)
   (translate 0 0 (:z state))
   (rotate (:xrot state) 1 0 0)
   (rotate (:yrot state) 0 1 0)
