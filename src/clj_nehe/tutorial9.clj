@@ -155,7 +155,7 @@
          (rotate (- (:tilt state)) 1 0 0)
          (if (:twinkle state)
            (let [n (mod (dec i) c)
-                 {r :r g :g b :b} (nth stars n)]
+                 {r :r g :g b :b} (stars n)]
              (color-byte r g b 255)
              (draw-quads
               (doall (map tex-coord-and-vertex (partition 2 *vertices*))))))

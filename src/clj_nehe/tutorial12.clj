@@ -151,9 +151,9 @@
                    -20)
         (rotate (+ (- 45.0 (* 2.0 yloop)) (:xrot state)) 1 0 0)
         (rotate (+ 45.0 (:yrot state)) 0 1 0)
-        (apply color (nth *boxcol* (dec yloop)))
+        (apply color (*boxcol* (dec yloop)))
         (call-display-list (:list1 state))
-        (apply color (nth *topcol* (dec yloop)))
+        (apply color (*topcol* (dec yloop)))
         (call-display-list (:list2 state)))))
   (app/repaint!))
 
