@@ -105,8 +105,8 @@
   (merge state
       {:xrot 0.0
        :yrot 0.0
-       :list1 (create-display-list (doall (map tex-coord-and-vertex (partition 2 *list1*))))
-       :list2 (create-display-list (doall (map tex-coord-and-vertex (partition 2 *list2*))))
+       :list1 (create-display-list (draw-quads (doall (map tex-coord-and-vertex (partition 2 *list1*)))))
+       :list2 (create-display-list (draw-quads (doall (map tex-coord-and-vertex (partition 2 *list2*)))))
        :texture (load-texture-from-file *image-path*)}))
 
 (defn reshape [[x y width height] state]
