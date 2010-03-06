@@ -6,9 +6,33 @@
 ;; -----------------------------------------------------------------------------
 ;; Vars
 
+(def *max-particles* 1000)
 (def *width* 640)
-
 (def *height* 480)
+
+(def *colors* 
+	[[1 0.5 0.5] [1 0.75 0.5] [1 1 0.5] [0.75 1 0.5] 
+         [0.5 1 0.5] [0.5 1 0.75] [0.5 1 1] [0.5 0.75 1] 
+         [0.5 0.5 1] [0.75 0.5 1] [1 0.5 1] [1 0.5 0.75]])
+
+(def *particles*
+     (for [x (range *max-particles*)]
+       (let [[r g b] (*colors* (int (* x (/ 12 *max-particles*))))]
+        {:active true
+         :life 1.0
+         :fade (+ (/ (rand-int 100) 1000.0) 0.003)
+         :r r
+         :g g
+         :b b
+         :x 0.0
+         :y 0.0
+         :z 0.0
+         :xi (* (- (rand-int 50) 25.0) 10.0)
+         :yi (* (- (rand-int 50) 25.0) 10.0)
+         :zi (* (- (rand-int 50) 25.0) 10.0)
+         :xg 0.0
+         :yg -0.8
+         :zg 0.0})))
 
 (def *tri* [[0 1 0]
             [-1 -1 0]
@@ -37,7 +61,15 @@
   (enable :depth-test)
   (depth-test :lequal)
   (hint :perspective-correction-hint :nicest)
-  (assoc state :fullscreen false))
+  (merge state
+         {:fullscreen false
+          :rainbow true
+          :sp false
+          :rp false
+          :slowdown 2.0
+          :xspeed 0
+          :yspeed 0
+          :zoom -40.0}))
 
 (defn reshape [[x y width height] state]
   (viewport 0 0 *width* *height*)
