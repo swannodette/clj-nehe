@@ -1,11 +1,17 @@
 (ns clj-nehe.tutorial19
   (:use [penumbra opengl geometry]
-        [penumbra.opengl.core :only [gl-import]])
-  (:require [penumbra.app :as app]))
+        [penumbra.opengl.texture :only [gl-tex-coord-2]]
+        [penumbra.opengl.core :only [gl-import]]
+        [clojure.contrib.duck-streams :only [pwd]]
+        [clojure.contrib.seq-utils :only [indexed]])
+  (:require [penumbra.app :as app])
+  (:import [javax.imageio ImageIO]
+           [java.io File]))
 
 ;; -----------------------------------------------------------------------------
 ;; Vars
 
+(def *image* (ImageIO/read (File. (pwd) "/src/clj_nehe/Crate.bmp")))
 (def *max-particles* 1000)
 (def *width* 640)
 (def *height* 480)
@@ -48,6 +54,9 @@
 
 (gl-import glClearDepth clear-depth)
 
+(defmacro += [m ks form]
+  `(update-in ~m [~ks] (fn [n#] (+ n# ~form))))
+
 ;; -----------------------------------------------------------------------------
 ;; Fns
 
@@ -58,9 +67,11 @@
   (shade-model :smooth)
   (clear-color 0 0 0 0.5)
   (clear-depth 1)
-  (enable :depth-test)
-  (depth-test :lequal)
+  (disable :depth-test)
+  (enable :blend)
+  (blend-func :src-alpha :one)
   (hint :perspective-correction-hint :nicest)
+  (enable :texture-2d)
   (merge state
          {:fullscreen false
           :rainbow true
@@ -69,11 +80,13 @@
           :slowdown 2.0
           :xspeed 0
           :yspeed 0
-          :zoom -40.0}))
+          :zoom -40.0
+          :particles *particles*
+          :texture (load-texture-from-image *image*)}))
 
 (defn reshape [[x y width height] state]
   (viewport 0 0 *width* *height*)
-  (frustum-view 45 (/ (double *width*) *height*) 0.1 100)
+  (frustum-view 45 (/ (double *width*) *height*) 0.1 200)
   (load-identity)
   state)
 
@@ -84,14 +97,34 @@
           state)
     state))
 
-(defn display [[delta time] state]
-  (translate -1.5 0 -6)
-  (draw-triangles
-   (doall (map #(apply vertex %) *tri*)))
-  (translate 3 0 0)
-  (draw-quads
-   (doall (map #(apply vertex %) *quad*)))
-  (app/repaint!))
+(defn update-particle [particle slowdown]
+  (let [{:keys [xi yi zi xg yg zg life fade]} particle
+        active (< (- life fade) 0.0)]
+    (-> particle
+        (+= :x (/ xi slowdown))
+        (+= :y (/ yi slowdown))
+        (+= :z (/ zi slowdown))
+        (+= :xi xg)
+        (+= :yi yg)
+        (+= :zi zg)
+        (+= :life fade))))
+
+(defn update [[delta time] {particles :particles slowdown :slowdown :as state}]
+  (assoc :particles (map #(update-particle % slowdown) particles)))
+
+(defn display [[delta time] {zoom :zoom particles :partcles :as state}]
+  (doseq [{x :x y :y z :z
+           r :r g :g b :b
+           life :life
+           :as particle} particles]
+    (if (:active particle)
+      (color r g b life)
+      (let [z (+ z zoom)]
+       (draw-triangle-strip
+        (gl-tex-coord-2 1 1) (vertex (+ x 0.5) (+ y 0.5) z)
+        (gl-tex-coord-2 0 1) (vertex (- x 0.5) (+ y 0.5) z)
+        (gl-tex-coord-2 1 0) (vertex (+ x 0.5) (- y 0.5) z)
+        (gl-tex-coord-2 0 0) (vertex (- x 0.5) (- y 0.5) z))))))
 
 (defn display-proxy [& args]
   (apply display args))
