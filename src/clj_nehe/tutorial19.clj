@@ -57,9 +57,6 @@
 (defmacro += [m ks form]
   `(update-in ~m [~ks] (fn [n#] (+ n# ~form))))
 
-(defmacro set= [m ks form]
-  `(assoc-in ~m [~ks] ~form))
-
 ;; -----------------------------------------------------------------------------
 ;; Fns
 
