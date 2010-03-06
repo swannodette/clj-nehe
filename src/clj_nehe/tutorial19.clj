@@ -77,17 +77,17 @@
   (enable :texture-2d)
   (merge state
          {:fullscreen false
-          :rainbow true
-          :col 0
-          :sp false
-          :rp false
-          :slowdown 2.0
-          :xspeed 0
-          :yspeed 0
-          :zoom -40.0
-          :delay 0
-          :particles *particles*
-          :texture (load-texture-from-image *image*)}))
+          :rainbow    true
+          :col        0
+          :sp         false
+          :rp         false
+          :slowdown   2.0
+          :xspeed     0
+          :yspeed     0
+          :zoom       -40.0
+          :delay      0
+          :particles  *particles*
+          :texture    (load-texture-from-image *image*)}))
 
 (defn reshape [[x y width height] state]
   (viewport 0 0 *width* *height*)
@@ -114,15 +114,15 @@
          (+= :yi yg)
          (+= :zi zg)
          (+= :life fade))
-     (-> particle
-         (set= :life 0.0)
-         (set= :fade (+ (/ (rand-int 100) 1000.0) 0.003))
-         (set= :x 0.0)
-         (set= :y 0.0)
-         (set= :z 0.0)
-         (set= :xi (- (+ xspeed (rand-int 60)) 32.0))
-         (set= :yi (- (+ yspeed (rand-int 60)) 30.0))
-         (set= :zi (- (rand-int 60) 30.0))))))
+     (merge particle
+            {:life  0.0
+             :fade  (+ (/ (rand-int 100) 1000.0) 0.003)
+             :x     0.0
+             :y     0.0
+             :z     0.0
+             :xi    (- (+ xspeed (rand-int 60)) 32.0)
+             :yi    (- (+ yspeed (rand-int 60)) 30.0)
+             :zi    (- (rand-int 60) 30.0)}))))
 
 (defn update [[delta time] state]
   (-> state
