@@ -57,6 +57,9 @@
 (defmacro += [m ks form]
   `(update-in ~m [~ks] (fn [n#] (+ n# ~form))))
 
+(defmacro set= [m ks form]
+  `(assoc-in ~m [~ks] ~form))
+
 ;; -----------------------------------------------------------------------------
 ;; Fns
 
@@ -75,12 +78,14 @@
   (merge state
          {:fullscreen false
           :rainbow true
+          :col 0
           :sp false
           :rp false
           :slowdown 2.0
           :xspeed 0
           :yspeed 0
           :zoom -40.0
+          :delay 0
           :particles *particles*
           :texture (load-texture-from-image *image*)}))
 
@@ -97,20 +102,32 @@
           state)
     state))
 
-(defn update-particle [particle slowdown]
+(defn update-particle [particle {:keys [slowdown xspeed yspeed] :as state}]
   (let [{:keys [xi yi zi xg yg zg life fade]} particle
         active (< (- life fade) 0.0)]
-    (-> particle
-        (+= :x (/ xi slowdown))
-        (+= :y (/ yi slowdown))
-        (+= :z (/ zi slowdown))
-        (+= :xi xg)
-        (+= :yi yg)
-        (+= :zi zg)
-        (+= :life fade))))
+    (if active
+     (-> particle
+         (+= :x (/ xi slowdown))
+         (+= :y (/ yi slowdown))
+         (+= :z (/ zi slowdown))
+         (+= :xi xg)
+         (+= :yi yg)
+         (+= :zi zg)
+         (+= :life fade))
+     (-> particle
+         (set= :life 0.0)
+         (set= :fade (+ (/ (rand-int 100) 1000.0) 0.003))
+         (set= :x 0.0)
+         (set= :y 0.0)
+         (set= :z 0.0)
+         (set= :xi (- (+ xspeed (rand-int 60)) 32.0))
+         (set= :yi (- (+ yspeed (rand-int 60)) 30.0))
+         (set= :zi (- (rand-int 60) 30.0))))))
 
-(defn update [[delta time] {particles :particles slowdown :slowdown :as state}]
-  (assoc :particles (map #(update-particle % slowdown) particles)))
+(defn update [[delta time] state]
+  (-> state
+      (update-in [:particles] #(map (fn [p] (update-particle p state)) %))
+      (update-in [:col] #(mod (inc %) 11))))
 
 (defn display [[delta time] {zoom :zoom particles :partcles :as state}]
   (doseq [{x :x y :y z :z
