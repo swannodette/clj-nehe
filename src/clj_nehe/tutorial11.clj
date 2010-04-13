@@ -19,16 +19,11 @@
          (for [x (range 45) y (range 45)]
            (let [x (float x)
                  y (float y)]
-             [(prim-float - (prim-float / x 5.0) 4.5)
-              (prim-float - (prim-float / y 5.0) 4.5)
+             [(prim float (- (/ x 5.0) 4.5))
+              (prim float (- (/ y 5.0) 4.5))
               (Math/sin
-               (prim-float *
-                           (prim-float /
-                                       (prim-float *
-                                                   (prim-float / (mod (int (+ x (float n))) (int 45)) 5.0)
-                                                   40.0)
-                                       360.0)
-                           (prim-float * Math/PI 2.0)))])))))
+               (prim float (* (/ (* (/ (prim int mod (prim float + x n) 45) 5.0) 40.0) 360.0)
+                           (* Math/PI 2.0))))])))))
 
 (defn points []
   ((fn points* [n]
@@ -85,15 +80,15 @@
 
 (defn reshape [[x y width height] state]
   (viewport 0 0 width height)
-  (frustum-view 45 (prim-float / width height) 0.1 100)
+  (frustum-view 45 (prim float / width height) 0.1 100)
   (load-identity)
   state)
 
 (defn update [[delta time] state]
   (-> state
-      (update-in [:xrot] (fn [xr] (prim-float + xr 0.3)))
-      (update-in [:yrot] (fn [yr] (prim-float + yr 0.2)))
-      (update-in [:zrot] (fn [zr] (prim-float + zr 0.4)))
+      (update-in [:xrot] (fn [xr] (prim float + xr 0.3)))
+      (update-in [:yrot] (fn [yr] (prim float + yr 0.2)))
+      (update-in [:zrot] (fn [zr] (prim float + zr 0.4)))
       (update-in [:points] next)))
 
 (defn key-press [key state]
@@ -117,8 +112,8 @@
                j  (int j)
                tl (+ i j)
                bl (+ i (int (inc j)))
-               br (prim-int + i 45 (inc j))
-               tr (prim-int + i 45 j)
+               br (prim int + i 45 (inc j))
+               tr (prim int + i 45 j)
                vs [[(tex-points tl) (points tl)]
                    [(tex-points bl) (points bl)]
                    [(tex-points br) (points br)]
