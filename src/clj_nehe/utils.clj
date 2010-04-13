@@ -18,12 +18,6 @@
      `(~fn (~type ~(to-prim-op a type))
         (prim ~type ~fn ~b ~@rest))))
 
-(defmacro prim-int [fn & rest]
-  `(prim int ~fn ~@rest))
-
-(defmacro prim-float [fn & rest]
-  `(prim float ~fn ~@rest))
-
 (comment
 
   (prim float (+ 4 5 (* 6 7) 8))
