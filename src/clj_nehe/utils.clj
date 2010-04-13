@@ -24,7 +24,7 @@
      `(~fn (~type ~((to-prim-op type) a)) (~type ~((to-prim-op type) b))))
   ([type fn a b & rest]
      `(~fn (~type ~((to-prim-op type) a))
-        (prim ~type ~fn ~b ~@rest)))) 
+        (~type (prim ~type ~fn ~b ~@rest)))))
 
 (comment
 
