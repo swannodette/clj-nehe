@@ -8,6 +8,8 @@
     expr))
 
 (defmacro prim
+  ([type a]
+     `(~type ~(to-prim-op a type)))
   ([fn type a]
      `(~fn (~type ~(to-prim-op a type))))
   ([fn type a b]
@@ -23,6 +25,8 @@
   `(prim ~fn float ~@rest))
 
 (comment
+
+  (prim float (+ 4 5 (* 6 7) 8))
   
   ; < ~20ms
   (dotimes [_ 10]
