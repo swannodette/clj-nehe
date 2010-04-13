@@ -9,6 +9,9 @@
      `(~fn (~type ~a)
         (prim ~fn ~type ~b ~@rest))))
 
+(defmacro prim-int [fn & rest]
+  `(prim ~fn int ~@rest))
+
 (defmacro prim-float [fn & rest]
   `(prim ~fn float ~@rest))
 
