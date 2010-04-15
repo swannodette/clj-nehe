@@ -19,11 +19,11 @@
   ([type a]
      `(~type ~(postwalk (to-prim-op type) (mexpand-all a))))
   ([type fn a]
-     `(~fn (~type ~((to-prim-op type) a))))
+     `(~fn (~type ~a)))
   ([type fn a b]
-     `(~fn (~type ~((to-prim-op type) a)) (~type ~((to-prim-op type) b))))
+     `(~fn (~type ~a) (~type ~b)))
   ([type fn a b & rest]
-     `(~fn (~type ~((to-prim-op type) a))
+     `(~fn (~type ~a)
         (~type (prim ~type ~fn ~b ~@rest)))))
 
 (comment
