@@ -1,8 +1,9 @@
-(defproject clj-nehe "0.1.0"
+(defproject clj-nehe "0.1.0-SNAPSHOT"
   :description "The Nehe tutorials ported to Penumbra"
-  :dependencies [[org.clojure/clojure "1.1.0"]
-                 [org.clojure/clojure-contrib "1.1.0"]
-                 [penumbra "0.5.0"]]
-  :native-dependencies [[lwjgl "2.2.2"]]
+  :dependencies [[org.clojure/clojure "1.2.0-master-SNAPSHOT"]
+                 [org.clojure/clojure-contrib "1.2.0-SNAPSHOT"]
+                 [penumbra "0.6.0-SNAPSHOT"]
+                 [cantor "0.1.0"]]
+  :native-dependencies [[penumbra/lwjgl "2.4.2"]]
   :dev-dependencies [[native-deps "1.0.0"]
-                     [leiningen/lein-swank "1.1.0"]])
+                     [leiningen/lein-swank "1.2.0-SNAPSHOT"]])
