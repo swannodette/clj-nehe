@@ -1,13 +1,13 @@
 (ns clj-nehe.tutorial2
-  (:use [penumbra opengl geometry]
+  (:use [penumbra opengl]
         [penumbra.opengl.core :only [gl-import]])
-  (:require [penumbra.app :as app]))
+  (:require [penumbra.app :as app]
+            [penumbra.app.window :as window]))
 
 ;; -----------------------------------------------------------------------------
 ;; Vars
 
 (def *width* 640)
-
 (def *height* 480)
 
 (def *tri* [[0 1 0]
@@ -30,7 +30,7 @@
 (defn init [state]
   (app/title! "Nehe Tutorial 2")
   (app/vsync! false)
-  (app/display-mode! *width* *height*)
+  (window/display-mode! *width* *height*)
   (shade-model :smooth)
   (clear-color 0 0 0 0.5)
   (clear-depth 1)
