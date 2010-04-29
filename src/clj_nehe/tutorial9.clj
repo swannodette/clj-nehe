@@ -1,9 +1,8 @@
 (ns clj-nehe.tutorial9
-  (:use [penumbra opengl geometry]
-        [penumbra.opengl.texture :only [gl-tex-coord-2]]
+  (:use [penumbra opengl]
         [penumbra.opengl.core :only [gl-import]])
-  (:use [clojure.contrib.duck-streams :only [pwd]]
-        [clojure.contrib.seq-utils :only [indexed]])
+  (:use [clojure.contrib.io :only [pwd]]
+        [clojure.contrib.seq :only [indexed]])
   (:require [penumbra.app :as app])
   (:import [javax.imageio ImageIO]
            [java.io File]))
@@ -39,11 +38,8 @@
    `(fn [[~@syms]]
       ~@forms)))
 
-(defn tex-coord [x y]
-  (gl-tex-coord-2 x y))
-
-(def tex-coord-and-vertex
-     (series tex-coord vertex))
+(def texture-and-vertex
+     (series texture vertex))
 
 (defn color-byte [r g b a]
   (let [r (/ r 255.0)
@@ -158,11 +154,11 @@
                  {r :r g :g b :b} (stars n)]
              (color-byte r g b 255)
              (draw-quads
-              (doall (map tex-coord-and-vertex (partition 2 *vertices*))))))
+              (doall (map texture-and-vertex (partition 2 *vertices*))))))
          (rotate (+ (* i 0.01) (:spin state)) 0 0 1)
          (color-byte (:r star) (:g star) (:b star) 255)
          (draw-quads
-          (doall (map tex-coord-and-vertex (partition 2 *vertices*))))))))
+          (doall (map texture-and-vertex (partition 2 *vertices*))))))))
   (app/repaint!))
 
 (defn display-proxy [& args]
@@ -177,5 +173,3 @@
 
 (defn start []
   (app/start options {}))
-
-(start)

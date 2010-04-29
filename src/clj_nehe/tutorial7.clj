@@ -70,7 +70,7 @@
    `(fn [[~@syms]]
       ~@forms)))
 
-(def normal-and-4tex-coord-and-vertices
+(def normal-and-4texture-and-vertices
      (series normal
              texture vertex
              texture vertex
@@ -165,7 +165,7 @@
   (with-texture ((:texs state) (:filter state))
     (draw-quads
      (doall
-      (map normal-and-4tex-coord-and-vertices (partition 9 *cube*)))))
+      (map normal-and-4texture-and-vertices (partition 9 *cube*)))))
   (app/repaint!))
 
 (defn display-proxy [& args]

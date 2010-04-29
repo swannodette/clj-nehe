@@ -58,7 +58,7 @@
    `(fn [[~@syms]]
       ~@forms)))
 
-(def tex-coord-and-vertex (series texture vertex))
+(def texture-and-vertex (series texture vertex))
 
 ;; -----------------------------------------------------------------------------
 ;; Import
@@ -114,7 +114,7 @@
   (with-texture (:texture state)
     (draw-quads
      (doall
-      (map tex-coord-and-vertex (partition 2 *cube*)))))
+      (map texture-and-vertex (partition 2 *cube*)))))
   (app/repaint!))
 
 (defn display-proxy [& args]

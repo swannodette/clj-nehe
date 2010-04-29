@@ -1,8 +1,7 @@
 (ns clj-nehe.tutorial8
-  (:use [penumbra opengl geometry]
-        [penumbra.opengl.texture :only [gl-tex-coord-2]]
+  (:use [penumbra opengl]
         [penumbra.opengl.core :only [gl-import]])
-  (:use [clojure.contrib.duck-streams :only [pwd]])
+  (:use [clojure.contrib.io :only [pwd]])
   (:require [penumbra.app :as app])
   (:import [javax.imageio ImageIO]
            [java.io File]))
@@ -71,15 +70,12 @@
    `(fn [[~@syms]]
       ~@forms)))
 
-(defn tex-coord [x y]
-  (gl-tex-coord-2 x y))
-
-(def normal-and-4tex-coord-and-vertices
+(def normal-and-4texture-and-vertices
      (series normal
-             tex-coord vertex
-             tex-coord vertex
-             tex-coord vertex
-             tex-coord vertex))
+             texture vertex
+             texture vertex
+             texture vertex
+             texture vertex))
 
 ;; -----------------------------------------------------------------------------
 ;; Import
@@ -180,7 +176,7 @@
   (with-texture ((:texs state) (:filter state))
     (draw-quads
      (doall
-      (map normal-and-4tex-coord-and-vertices (partition 9 *cube*)))))
+      (map normal-and-4texture-and-vertices (partition 9 *cube*)))))
   (app/repaint!))
 
 (defn display-proxy [& args]
@@ -195,5 +191,3 @@
 
 (defn start []
   (app/start options {}))
-
-(start)
