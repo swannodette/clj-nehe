@@ -80,13 +80,14 @@
   (depth-test :lequal)
   (hint :perspective-correction-hint :nicest)
   (merge state
-          {:fullscreen false
-           :xrot 0
-           :yrot 0
-           :zrot 0
-           :texture (load-texture-from-file *image-path*)}))
+         {:fullscreen false
+          :xrot 0
+          :yrot 0
+          :zrot 0
+          :texture (load-texture-from-file *image-path*)}))
 
 (defn reshape [[x y width height] state]
+  (println "reshape")
   (viewport 0 0 *width* *height*)
   (frustum-view 45 (/ (double *width*) *height*) 0.1 100)
   (load-identity)
