@@ -1,8 +1,7 @@
 (ns clj-nehe.tutorial6
-  (:use [penumbra opengl geometry]
-        [penumbra.opengl.texture :only [gl-tex-coord-2]]
+  (:use [penumbra opengl]
         [penumbra.opengl.core :only [gl-import]])
-  (:use [clojure.contrib.duck-streams :only [pwd]])
+  (:use [clojure.contrib.io :only [pwd]])
   (:require [penumbra.app :as app]))
 
 ;; -----------------------------------------------------------------------------
@@ -59,10 +58,7 @@
    `(fn [[~@syms]]
       ~@forms)))
 
-(defn tex-coord [x y]
-  (gl-tex-coord-2 x y))
-
-(def tex-coord-and-vertex (series tex-coord vertex))
+(def tex-coord-and-vertex (series texture vertex))
 
 ;; -----------------------------------------------------------------------------
 ;; Import
@@ -131,5 +127,3 @@
 
 (defn start []
   (app/start options {}))
-
-(start)
