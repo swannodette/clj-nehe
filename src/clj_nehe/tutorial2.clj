@@ -68,4 +68,5 @@
               :display display-proxy
               :init init})
 
-(defn start [] (app/start options {}))
+(defn start []
+  (app/start options {}))

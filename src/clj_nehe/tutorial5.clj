@@ -1,5 +1,5 @@
 (ns clj-nehe.tutorial5
-  (:use [penumbra opengl geometry]
+  (:use [penumbra opengl]
         [penumbra.opengl.core :only [gl-import]])
   (:require [penumbra.app :as app]))
 
@@ -7,7 +7,6 @@
 ;; Vars
 
 (def *width* 640)
-
 (def *height* 480)
 
 (def *pyramid* 
@@ -171,5 +170,3 @@
 
 (defn start []
   (app/start options {}))
-
-(start)
