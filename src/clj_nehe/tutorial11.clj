@@ -1,8 +1,7 @@
 (ns clj-nehe.tutorial11
-  (:use [penumbra opengl geometry]
-        [penumbra.opengl.texture :only [gl-tex-coord-2]]
+  (:use [penumbra opengl]
         [penumbra.opengl.core :only [gl-import]]
-        [clojure.contrib.duck-streams :only [pwd]]
+        [clojure.contrib.io :only [pwd]]
         [clj-nehe.utils])
   (:require [penumbra.app :as app]))
 
@@ -43,15 +42,13 @@
    `(fn [[~@syms]]
       ~@forms)))
 
-(defn tex-coord [x y]
-  (gl-tex-coord-2 x y))
-
-(def tex-coord-and-vertex (series tex-coord vertex))
+(def texture-and-vertex (series texture vertex))
 
 ;; -----------------------------------------------------------------------------
 ;; Import
 
 (gl-import glClearDepth clear-depth)
+(gl-import glPolygonMode gl-polygon-mode)
 
 ;; -----------------------------------------------------------------------------
 ;; Fns
@@ -118,7 +115,7 @@
                    [(tex-points bl) (points bl)]
                    [(tex-points br) (points br)]
                    [(tex-points tr) (points tr)]]]
-           (doall (map tex-coord-and-vertex vs)))))))
+           (doall (map texture-and-vertex vs)))))))
   (app/repaint!))
 
 (defn display-proxy [& args]
@@ -132,5 +129,3 @@
 
 (defn start []
   (app/start options {}))
-
-(start)

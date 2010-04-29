@@ -1,8 +1,7 @@
 (ns clj-nehe.tutorial12
-  (:use [penumbra opengl geometry]
-        [penumbra.opengl.texture :only [gl-tex-coord-2]]
+  (:use [penumbra opengl]
         [penumbra.opengl.core :only [gl-import]])
-  (:use [clojure.contrib.duck-streams :only [pwd]])
+  (:use [clojure.contrib.io :only [pwd]])
   (:require [penumbra.app :as app]))
 
 ;; -----------------------------------------------------------------------------
@@ -75,10 +74,7 @@
    `(fn [[~@syms]]
       ~@forms)))
 
-(defn tex-coord [x y]
-  (gl-tex-coord-2 x y))
-
-(def tex-coord-and-vertex (series tex-coord vertex))
+(def texture-and-vertex (series texture vertex))
 
 ;; -----------------------------------------------------------------------------
 ;; Import
@@ -105,8 +101,8 @@
   (merge state
       {:xrot 0.0
        :yrot 0.0
-       :list1 (create-display-list (draw-quads (doall (map tex-coord-and-vertex (partition 2 *list1*)))))
-       :list2 (create-display-list (draw-quads (doall (map tex-coord-and-vertex (partition 2 *list2*)))))
+       :list1 (create-display-list (draw-quads (doall (map texture-and-vertex (partition 2 *list1*)))))
+       :list2 (create-display-list (draw-quads (doall (map texture-and-vertex (partition 2 *list2*)))))
        :texture (load-texture-from-file *image-path*)}))
 
 (defn reshape [[x y width height] state]
@@ -169,5 +165,3 @@
 
 (defn start []
   (app/start options {}))
-
-(start)
