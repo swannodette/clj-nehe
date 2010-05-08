@@ -2,12 +2,12 @@
   (:use [clojure.walk :only [postwalk]]
         [clojure.contrib.macro-utils :only [mexpand-all]]))
 
-(defn casted? [expr]
+(defn- casted? [expr]
   (when-let [[_ x] expr]
     (when (and (coll? x) (#{'float 'int 'double 'long 'short 'byte} (first x)))
       true)))
 
-(defn to-prim-op [type]
+(defn- to-prim-op [type]
   (fn [expr]
     (if-let [op (and (coll? expr)
                      (not (casted? expr))

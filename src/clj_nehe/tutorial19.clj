@@ -1,9 +1,9 @@
 (ns clj-nehe.tutorial19
-  (:use [penumbra opengl geometry]
-        [penumbra.opengl.texture :only [gl-tex-coord-2]]
+  (:use [penumbra opengl]
         [penumbra.opengl.core :only [gl-import]]
-        [clojure.contrib.duck-streams :only [pwd]]
-        [clojure.contrib.seq-utils :only [indexed]])
+        [clj-nehe.utils :only [prim]]
+        [clojure.contrib.io :only [pwd]]
+        [clojure.contrib.seq :only [indexed]])
   (:require [penumbra.app :as app])
   (:import [javax.imageio ImageIO]
            [java.io File]))
@@ -25,20 +25,20 @@
      (for [x (range *max-particles*)]
        (let [[r g b] (*colors* (int (* x (/ 12 *max-particles*))))]
         {:active true
-         :life 1.0
-         :fade (+ (/ (rand-int 100) 1000.0) 0.003)
-         :r r
-         :g g
-         :b b
-         :x 0.0
-         :y 0.0
-         :z 0.0
-         :xi (* (- (rand-int 50) 25.0) 10.0)
-         :yi (* (- (rand-int 50) 25.0) 10.0)
-         :zi (* (- (rand-int 50) 25.0) 10.0)
-         :xg 0.0
-         :yg -0.8
-         :zg 0.0})))
+         :life   1.0
+         :fade   (+ (/ (rand-int 100) 1000.0) 0.003)
+         :r      r
+         :g      g
+         :b      b
+         :x      0.0
+         :y      0.0
+         :z      0.0
+         :xi     (* (- (rand-int 50) 25.0) 10.0)
+         :yi     (* (- (rand-int 50) 25.0) 10.0)
+         :zi     (* (- (rand-int 50) 25.0) 10.0)
+         :xg     0.0
+         :yg     -0.8
+         :zg     0.0})))
 
 (def *tri* [[0 1 0]
             [-1 -1 0]
@@ -113,32 +113,32 @@
          (+= :life fade))
      (merge particle
             {:life  0.0
-             :fade  (+ (/ (rand-int 100) 1000.0) 0.003)
+             :fade  (prim double (+ (/ (rand-int 100) 1000.0) 0.003))
              :x     0.0
              :y     0.0
              :z     0.0
-             :xi    (- (+ xspeed (rand-int 60)) 32.0)
-             :yi    (- (+ yspeed (rand-int 60)) 30.0)
-             :zi    (- (rand-int 60) 30.0)}))))
+             :xi    (prim double (- (+ xspeed (rand-int 60)) 32.0))
+             :yi    (prim double (- (+ yspeed (rand-int 60)) 30.0))
+             :zi    (prim double (- (rand-int 60) 30.0))}))))
 
 (defn update [[delta time] state]
   (-> state
       (update-in [:particles] #(map (fn [p] (update-particle p state)) %))
       (update-in [:col] #(mod (inc %) 11))))
 
-(defn display [[delta time] {zoom :zoom particles :partcles :as state}]
-  (doseq [{x :x y :y z :z
-           r :r g :g b :b
-           life :life
-           :as particle} particles]
-    (if (:active particle)
+(defn display [[delta time] {:keys [particles zoom] :as state}]
+  (doseq [{:keys [x y z r g b life active]} particles]
+    (if active
       (color r g b life)
-      (let [z (+ z zoom)]
-       (draw-triangle-strip
-        (gl-tex-coord-2 1 1) (vertex (+ x 0.5) (+ y 0.5) z)
-        (gl-tex-coord-2 0 1) (vertex (- x 0.5) (+ y 0.5) z)
-        (gl-tex-coord-2 1 0) (vertex (+ x 0.5) (- y 0.5) z)
-        (gl-tex-coord-2 0 0) (vertex (- x 0.5) (- y 0.5) z))))))
+      (let [x    (double x)
+            y    (double y)
+            z    (+ (double z) (double zoom))
+            half (double 0.5)]
+        draw-triangle-strip
+        (gl-tex-coord-2 1 1) (vertex (+ x half) (+ y half) z)
+        (gl-tex-coord-2 0 1) (vertex (- x half) (+ y half) z)
+        (gl-tex-coord-2 1 0) (vertex (+ x half) (- y half) z)
+        (gl-tex-coord-2 0 0) (vertex (- x half) (- y half) z)))))
 
 (defn display-proxy [& args]
   (apply display args))
