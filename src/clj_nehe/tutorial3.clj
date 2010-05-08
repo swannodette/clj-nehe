@@ -64,7 +64,7 @@
   (translate 3 0 0)
   (color 0.5 0.5 1)
   (draw-quads
-   (doall (map #(apply vertex %) quad)))
+   (dorun (map #(apply vertex %) quad)))
   (app/repaint!))
 
 (defn display-proxy [& args]
