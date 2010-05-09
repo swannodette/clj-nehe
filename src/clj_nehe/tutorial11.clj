@@ -8,9 +8,9 @@
 ;; -----------------------------------------------------------------------------
 ;; Vars
 
-(def *image-path* (str (pwd) "/src/clj_nehe/Tim.bmp"))
-(def *width* 640)
-(def *height* 480)
+(def image-path (str (pwd) "/src/clj_nehe/Tim.bmp"))
+(def app-width 640)
+(def app-height 480)
 
 (defn gen-points [n]
   (let [n (int n)]
@@ -34,17 +34,6 @@
              [(/ x (float n)) (/ y (float n))])))
 
 ;; -----------------------------------------------------------------------------
-;; Helpers
-
-(defmacro series [& args]
-  (let [syms (take (count args) (repeatedly gensym))
-        forms (map #(cons 'apply %) (partition 2 (interleave args syms)))]
-   `(fn [[~@syms]]
-      ~@forms)))
-
-(def texture-and-vertex (series texture vertex))
-
-;; -----------------------------------------------------------------------------
 ;; Import
 
 (gl-import glClearDepth clear-depth)
@@ -56,7 +45,7 @@
 (defn init [state]
   (app/title! "Nehe Tutorial 11")
   (app/vsync! true)
-  (app/display-mode! *width* *height*)
+  (app/display-mode! app-width app-height)
   (enable :texture-2d)
   (shade-model :smooth)
   (clear-color 0 0 0 0.5)
@@ -73,7 +62,7 @@
           :zrot 0
           :points (points)
           :tex-points (tex-points 45)
-          :texture (load-texture-from-file *image-path*)}))
+          :texture (load-texture-from-file image-path)}))
 
 (defn reshape [[x y width height] state]
   (viewport 0 0 width height)
@@ -115,7 +104,9 @@
                    [(tex-points bl) (points bl)]
                    [(tex-points br) (points br)]
                    [(tex-points tr) (points tr)]]]
-           (doall (map texture-and-vertex vs)))))))
+           (doseq [[[tx ty] [vx vy vz]] vs]
+             (texture tx ty)
+             (vertex vx vy vz)))))))
   (app/repaint!))
 
 (defn display-proxy [& args]
