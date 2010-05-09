@@ -6,10 +6,10 @@
 ;; -----------------------------------------------------------------------------
 ;; Vars
 
-(def *width* 640)
-(def *height* 480)
+(def app-width 640)
+(def app-height 480)
 
-(def *pyramid* 
+(def pyramid 
      [
       ; front face
       [1 0 0]     ; red
@@ -45,7 +45,7 @@
       ]
      )
 
-(def *cube*
+(def cube
      [
       ; top face
       [0 1 0]     ; green
@@ -91,18 +91,6 @@
       ])
 
 ;; -----------------------------------------------------------------------------
-;; Helpers
-
-(defmacro series [& args]
-  (let [syms (take (count args) (repeatedly gensym))
-        forms (map #(cons 'apply %) (partition 2 (interleave args syms)))]
-   `(fn [[~@syms]]
-      ~@forms)))
-
-(def color-and-vertex (series color vertex))
-(def color-and-4vertices (series color vertex vertex vertex vertex))
-
-;; -----------------------------------------------------------------------------
 ;; Import
 
 (gl-import glClearDepth clear-depth)
@@ -113,7 +101,7 @@
 (defn init [state]
   (app/title! "Nehe Tutorial 5")
   (app/vsync! false)
-  (app/display-mode! *width* *height*)
+  (app/display-mode! app-width app-height)
   (shade-model :smooth)
   (clear-color 0 0 0 0.5)
   (clear-depth 1)
@@ -126,8 +114,8 @@
       (assoc :rcube 0)))
 
 (defn reshape [[x y width height] state]
-  (viewport 0 0 *width* *height*)
-  (frustum-view 45 (/ (double *width*) *height*) 0.1 100)
+  (viewport 0 0 app-width app-height)
+  (frustum-view 45 (/ (double app-width) app-height) 0.1 100)
   (load-identity)
   state)
 
@@ -147,16 +135,25 @@
   (translate -1.5 0 -6)
   (rotate (:rpyramid state) 0 1 0)
   (draw-triangles
-   (doall
-    (map color-and-vertex (partition 2 *pyramid*))))
+   (doseq [[[r g b] [x y z]] (partition 2 pyramid)]
+     (color r g b)
+     (vertex x y z)))
   (load-identity)
   (translate -1.5 0 -7)
   (translate 3 0 0)
   (rotate (:rcube state) 1 1 1)
   (color 0.5 0.5 1)
   (draw-quads
-   (doall
-    (map color-and-4vertices (partition 5 *cube*))))
+   (doseq [[[r g b]
+            [v1x v1y v1z]
+            [v2x v2y v2z]
+            [v3x v3y v3z]
+            [v4x v4y v4z]] (partition 5 cube)] 
+     (color r g b)
+     (vertex v1x v1y v1z)
+     (vertex v2x v2y v2z)
+     (vertex v3x v3y v3z)
+     (vertex v4x v4y v4z)))
   (app/repaint!))
 
 (defn display-proxy [& args]

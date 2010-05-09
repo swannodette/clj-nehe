@@ -7,11 +7,11 @@
 ;; -----------------------------------------------------------------------------
 ;; Vars
 
-(def *image-path* (str (pwd) "/src/clj_nehe/NeHe.bmp"))
-(def *width* 640)
-(def *height* 480)
+(def image-path (str (pwd) "/src/clj_nehe/NeHe.bmp"))
+(def app-width 640)
+(def app-height 480)
 
-(def *cube*
+(def cube
      [
       ; front face
       [0 0] [-1 -1 1]   ; bottom left of the texture and quad
@@ -51,16 +51,6 @@
       ])
 
 ;; -----------------------------------------------------------------------------
-;; Helpers
-(defmacro series [& args]
-  (let [syms (take (count args) (repeatedly gensym))
-        forms (map #(cons 'apply %) (partition 2 (interleave args syms)))]
-   `(fn [[~@syms]]
-      ~@forms)))
-
-(def texture-and-vertex (series texture vertex))
-
-;; -----------------------------------------------------------------------------
 ;; Import
 
 (gl-import glClearDepth clear-depth)
@@ -71,7 +61,7 @@
 (defn init [state]
   (app/title! "Nehe Tutorial 6")
   (app/vsync! false)
-  (app/display-mode! *width* *height*)
+  (app/display-mode! app-width app-height)
   (enable :texture-2d)
   (shade-model :smooth)
   (clear-color 0 0 0 0.5)
@@ -84,12 +74,12 @@
           :xrot 0
           :yrot 0
           :zrot 0
-          :texture (load-texture-from-file *image-path*)}))
+          :texture (load-texture-from-file image-path)}))
 
 (defn reshape [[x y width height] state]
   (println "reshape")
-  (viewport 0 0 *width* *height*)
-  (frustum-view 45 (/ (double *width*) *height*) 0.1 100)
+  (viewport 0 0 app-width app-height)
+  (frustum-view 45 (/ (double app-width) app-height) 0.1 100)
   (load-identity)
   state)
 
@@ -113,8 +103,9 @@
   (rotate (:zrot state) 0 0 1)
   (with-texture (:texture state)
     (draw-quads
-     (doall
-      (map texture-and-vertex (partition 2 *cube*)))))
+     (doseq [[[tx ty] [vx vy vz]] (partition 2 cube)]
+      (texture tx ty)
+      (vertex vx vy vz))))
   (app/repaint!))
 
 (defn display-proxy [& args]
