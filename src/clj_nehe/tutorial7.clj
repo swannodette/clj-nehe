@@ -9,14 +9,14 @@
 ;; -----------------------------------------------------------------------------
 ;; Vars
 
-(def *image* (ImageIO/read (File. (pwd) "/src/clj_nehe/Crate.bmp")))
-(def *width* 640)
-(def *height* 480)
-(def *light-ambient* [0.5 0.5 0.5 1])
-(def *light-diffuse* [1 1 1 1])
-(def *light-position* [0 0 2 1])
+(def image-path (ImageIO/read (File. (pwd) "/src/clj_nehe/Crate.bmp")))
+(def app-width 640)
+(def app-height 480)
+(def light-ambient [0.5 0.5 0.5 1])
+(def light-diffuse [1 1 1 1])
+(def light-position [0 0 2 1])
 
-(def *cube*
+(def cube
      [
       ; front face
       [0 0 1]           ; normal pointing towards viewer
@@ -62,22 +62,6 @@
       ])
 
 ;; -----------------------------------------------------------------------------
-;; Helpers
-
-(defmacro series [& args]
-  (let [syms (take (count args) (repeatedly gensym))
-        forms (map #(cons 'apply %) (partition 2 (interleave args syms)))]
-   `(fn [[~@syms]]
-      ~@forms)))
-
-(def normal-and-4texture-and-vertices
-     (series normal
-             texture vertex
-             texture vertex
-             texture vertex
-             texture vertex))
-
-;; -----------------------------------------------------------------------------
 ;; Import
 
 (gl-import glClearDepth clear-depth)
@@ -88,7 +72,7 @@
 (defn init [state]
   (app/title! "Nehe Tutorial 7")
   (app/vsync! false)
-  (app/display-mode! *width* *height*)
+  (app/display-mode! app-width app-height)
   (enable :texture-2d)
   (shade-model :smooth)
   (clear-color 0 0 0 0.5)
@@ -97,9 +81,9 @@
   (depth-test :lequal)
   (hint :perspective-correction-hint :nicest)
   (light 1
-         :ambient *light-ambient*
-         :diffuse *light-diffuse*
-         :position *light-position*)
+         :ambient light-ambient
+         :diffuse light-diffuse
+         :position light-position)
   (enable :light1)
   (merge state
          {:fullscreen false
@@ -110,13 +94,13 @@
           :yspeed 0
           :z -5
           :filter 0
-          :texs [(load-texture-from-image *image* false :nearest)
-                 (load-texture-from-image *image* false :linear)
-                 (load-texture-from-image *image* true)]}))
+          :texs [(load-texture-from-image image-path false :nearest)
+                 (load-texture-from-image image-path false :linear)
+                 (load-texture-from-image image-path true)]}))
 
 (defn reshape [[x y width height] state]
-  (viewport 0 0 *width* *height*)
-  (frustum-view 45 (/ (double *width*) *height*) 0.1 100)
+  (viewport 0 0 app-width app-height)
+  (frustum-view 45 (/ (double app-width) app-height) 0.1 100)
   (load-identity)
   state)
 
@@ -164,8 +148,16 @@
   (rotate (:yrot state) 0 1 0)
   (with-texture ((:texs state) (:filter state))
     (draw-quads
-     (doall
-      (map normal-and-4texture-and-vertices (partition 9 *cube*)))))
+     (doseq [[[nx ny nz]
+              [t1x t1y] [v1x v1y v1z]
+              [t2x t2y] [v2x v2y v2z]
+              [t3x t3y] [v3x v3y v3z]
+              [t4x t4y] [v4x v4y v4z]] (partition 9 cube)]
+      (normal nx ny nz)
+      (texture t1x t1y) (vertex v1x v1y v1z)
+      (texture t2x t2y) (vertex v2x v2y v2z)
+      (texture t3x t3y) (vertex v3x v3y v3z)
+      (texture t4x t4y) (vertex v4x v4y v4z))))
   (app/repaint!))
 
 (defn display-proxy [& args]
