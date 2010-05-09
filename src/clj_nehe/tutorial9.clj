@@ -10,36 +10,24 @@
 ;; -----------------------------------------------------------------------------
 ;; Vars
 
-(def *image-path* (str (pwd) "/src/clj_nehe/Star.bmp"))
-(def *image* (ImageIO/read (File. (pwd) "/src/clj_nehe/Star.bmp")))
-(def *width* 640)
-(def *height* 480)
-(def *num* 50)
-(def *stars*
-     (for [x (range *num*)]
+(def image-path (str (pwd) "/src/clj_nehe/Star.bmp"))
+(def image (ImageIO/read (File. (pwd) "/src/clj_nehe/Star.bmp")))
+(def app-width 640)
+(def app-height 480)
+(def num-stars 50)
+(def the-stars
+     (for [x (range num-stars)]
        {:angle 0
-        :dist (* (/ x *num*) 5)
+        :dist (* (/ x num-stars) 5)
         :r (rand-int 255)
         :g (rand-int 255)
         :b (rand-int 255)}))
 
-(def *vertices*
+(def vertices
      [[0 0] [-1 -1 0]
       [1 0] [1 -1 0]
       [1 1] [1 1 0]
       [0 1] [-1 1 0]])
-
-;; -----------------------------------------------------------------------------
-;; Helpers
-
-(defmacro series [& args]
-  (let [syms (take (count args) (repeatedly gensym))
-        forms (map #(cons 'apply %) (partition 2 (interleave args syms)))]
-   `(fn [[~@syms]]
-      ~@forms)))
-
-(def texture-and-vertex
-     (series texture vertex))
 
 (defn color-byte [r g b a]
   (let [r (/ r 255.0)
@@ -58,7 +46,7 @@
 (defn init [state]
   (app/title! "Nehe Tutorial 9")
   (app/vsync! false)
-  (app/display-mode! *width* *height*)
+  (app/display-mode! app-width app-height)
   (enable :texture-2d)
   (shade-model :smooth)
   (clear-color 0 0 0 0.5)
@@ -72,8 +60,8 @@
           :zoom -15
           :tilt 90
           :spin 0
-          :texture (load-texture-from-image *image*)
-          :stars *stars*}))
+          :texture (load-texture-from-image image)
+          :stars the-stars}))
 
 (defn reshape [[x y width height] state]
   (viewport 0 0 width height)
@@ -154,11 +142,15 @@
                  {r :r g :g b :b} (stars n)]
              (color-byte r g b 255)
              (draw-quads
-              (doall (map texture-and-vertex (partition 2 *vertices*))))))
+              (doseq [[[tx ty] [vx vy vz]] (partition 2 vertices)]
+                (texture tx ty)
+                (vertex vx vy vz)))))
          (rotate (+ (* i 0.01) (:spin state)) 0 0 1)
          (color-byte (:r star) (:g star) (:b star) 255)
          (draw-quads
-          (doall (map texture-and-vertex (partition 2 *vertices*))))))))
+          (doseq [[[tx ty] [vx vy vz]] (partition 2 vertices)]
+            (texture tx ty)
+            (vertex vx vy vz)))))))
   (app/repaint!))
 
 (defn display-proxy [& args]
