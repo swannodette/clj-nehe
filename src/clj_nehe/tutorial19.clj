@@ -1,6 +1,7 @@
 (ns clj-nehe.tutorial19
   (:use [penumbra opengl]
         [penumbra.opengl.core :only [gl-import]]
+        [penumbra.text :as text]
         [clj-nehe.utils :only [prim]]
         [clojure.contrib.io :only [pwd]]
         [clojure.contrib.seq :only [indexed]])
@@ -40,15 +41,6 @@
                 :xg     0.0
                 :yg     -0.8
                 :zg     0.0}))))
-
-(def tri [[0 1 0]
-            [-1 -1 0]
-            [1 -1 0]])
-
-(def quad [[-1 1 0]
-             [1 1 0]
-             [1 -1 0]
-             [-1 -1 0]])
 
 (def initial-state
      {:fullscreen false
@@ -136,6 +128,7 @@
       (update-in [:col] #(mod (inc %) 12))))
 
 (defn display [[delta time] {:keys [particles zoom] :as state}]
+  (text/write-to-screen (str (int (/ 1 delta)) " fps") 0 0)
   (doseq [{:keys [x y z r g b life active]} particles]
     (if active
       (do
@@ -148,12 +141,14 @@
            (texture 1 1) (vertex (+ x half) (+ y half) z)
            (texture 0 1) (vertex (- x half) (+ y half) z)
            (texture 1 0) (vertex (+ x half) (- y half) z)
-           (texture 0 0) (vertex (- x half) (- y half) z)))))))
+           (texture 0 0) (vertex (- x half) (- y half) z))))))
+  (app/repaint!))
 
 (defn display-proxy [& args]
   (apply display args))
 
 (def options {:reshape reshape
+              :update update
               :key-press key-press
               :display display-proxy
               :init init})
