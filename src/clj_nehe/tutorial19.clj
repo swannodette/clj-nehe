@@ -27,20 +27,14 @@
            (for [x (range max-particles)]
              (let [[r g b] (colors (int (* x (/ 12 max-particles))))]
                {:active true
-                :life   1.0
-                :fade   (+ (/ (rand-int 100) 1000.0) 0.003)
-                :r      r
-                :g      g
-                :b      b
-                :x      0.0
-                :y      0.0
-                :z      0.0
-                :xi     (* (- (rand-int 50) 25.0) 10.0)
-                :yi     (* (- (rand-int 50) 25.0) 10.0)
-                :zi     (* (- (rand-int 50) 25.0) 10.0)
-                :xg     0.0
-                :yg     -0.8
-                :zg     0.0}))))
+                :life 1.0
+                :fade (+ (/ (rand-int 100) 1000.0) 0.003)
+                :r r :g g :b b
+                :x 0.0 :y 0.0 :z 0.0
+                :xg 0.0 :yg -0.8 :zg 0.0
+                :xi (* (- (rand-int 50) 25.0) 10.0)
+                :yi (* (- (rand-int 50) 25.0) 10.0)
+                :zi (* (- (rand-int 50) 25.0) 10.0)}))))
 
 (def initial-state
      {:fullscreen false
@@ -99,28 +93,20 @@
 
 (defn update-particle [particle {:keys [slowdown xspeed yspeed col] :as state}]
   (let [{:keys [xi yi zi xg yg zg life fade]} particle
-        active (< (- life fade) 0.0)]
+        active (> (- life fade) 0.0)]
     (if active
      (-> particle
-         (+= :x (/ xi slowdown))
-         (+= :y (/ yi slowdown))
-         (+= :z (/ zi slowdown))
-         (+= :xi xg)
-         (+= :yi yg)
-         (+= :zi zg)
+         (+= :x (/ xi slowdown)) (+= :y (/ yi slowdown)) (+= :z (/ zi slowdown))
+         (+= :xi xg) (+= :yi yg) (+= :zi zg)
          (-= :life fade))
      (merge particle
-            {:life  0.0
+            {:life  1.0
              :fade  (prim double (+ (/ (rand-int 100) 1000.0) 0.003))
-             :r     ((colors col) 0)
-             :g     ((colors col) 1)
-             :b     ((colors col) 2)
-             :x     0.0
-             :y     0.0
-             :z     0.0
-             :xi    (prim double (- (+ xspeed (rand-int 60)) 32.0))
-             :yi    (prim double (- (+ yspeed (rand-int 60)) 30.0))
-             :zi    (prim double (- (rand-int 60) 30.0))}))))
+             :r ((colors col) 0) :g ((colors col) 1) :b ((colors col) 2)
+             :x 0.0 :y 0.0 :z 0.0
+             :xi (prim double (- (+ xspeed (rand-int 60)) 32.0))
+             :yi (prim double (- (+ yspeed (rand-int 60)) 30.0))
+             :zi (prim double (- (rand-int 60) 30.0))}))))
 
 (defn update [[delta time] state]
   (-> state
