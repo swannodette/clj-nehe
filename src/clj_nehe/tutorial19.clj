@@ -11,19 +11,19 @@
 ;; -----------------------------------------------------------------------------
 ;; Vars
 
-(def *image* (ImageIO/read (File. (pwd) "/src/clj_nehe/Crate.bmp")))
-(def *max-particles* 1000)
-(def *width* 640)
-(def *height* 480)
+(def image-path (ImageIO/read (File. (pwd) "/src/clj_nehe/Crate.bmp")))
+(def max-particles 1000)
+(def app-width 640)
+(def app-height 480)
 
-(def *colors* 
+(def colors 
 	[[1 0.5 0.5] [1 0.75 0.5] [1 1 0.5] [0.75 1 0.5] 
          [0.5 1 0.5] [0.5 1 0.75] [0.5 1 1] [0.5 0.75 1] 
          [0.5 0.5 1] [0.75 0.5 1] [1 0.5 1] [1 0.5 0.75]])
 
-(def *particles*
-     (for [x (range *max-particles*)]
-       (let [[r g b] (*colors* (int (* x (/ 12 *max-particles*))))]
+(def particles
+     (for [x (range max-particles)]
+       (let [[r g b] (colors (int (* x (/ 12 max-particles))))]
         {:active true
          :life   1.0
          :fade   (+ (/ (rand-int 100) 1000.0) 0.003)
@@ -40,11 +40,11 @@
          :yg     -0.8
          :zg     0.0})))
 
-(def *tri* [[0 1 0]
+(def tri [[0 1 0]
             [-1 -1 0]
             [1 -1 0]])
 
-(def *quad* [[-1 1 0]
+(def quad [[-1 1 0]
              [1 1 0]
              [1 -1 0]
              [-1 -1 0]])
@@ -57,13 +57,16 @@
 (defmacro += [m ks form]
   `(update-in ~m [~ks] (fn [n#] (+ n# ~form))))
 
+(defmacro -= [m ks form]
+  `(update-in ~m [~ks] (fn [n#] (- n# ~form))))
+
 ;; -----------------------------------------------------------------------------
 ;; Fns
 
 (defn init [state]
   (app/title! "Nehe Tutorial 19")
   (app/vsync! false)
-  (app/display-mode! *width* *height*)
+  (app/display-mode! app-width app-height)
   (shade-model :smooth)
   (clear-color 0 0 0 0.5)
   (clear-depth 1)
@@ -71,6 +74,7 @@
   (enable :blend)
   (blend-func :src-alpha :one)
   (hint :perspective-correction-hint :nicest)
+  (hint :point-smooth-hint :nicest)
   (enable :texture-2d)
   (merge state
          {:fullscreen false
@@ -83,12 +87,12 @@
           :yspeed     0
           :zoom       -40.0
           :delay      0
-          :particles  *particles*
-          :texture    (load-texture-from-image *image*)}))
+          :particles  particles
+          :texture    (load-texture-from-image image-path)}))
 
 (defn reshape [[x y width height] state]
-  (viewport 0 0 *width* *height*)
-  (frustum-view 45 (/ (double *width*) *height*) 0.1 200)
+  (viewport 0 0 app-width app-height)
+  (frustum-view 45 (/ (double app-width) app-height) 0.1 200)
   (load-identity)
   state)
 
@@ -99,7 +103,7 @@
           state)
     state))
 
-(defn update-particle [particle {:keys [slowdown xspeed yspeed] :as state}]
+(defn update-particle [particle {:keys [slowdown xspeed yspeed col] :as state}]
   (let [{:keys [xi yi zi xg yg zg life fade]} particle
         active (< (- life fade) 0.0)]
     (if active
@@ -110,10 +114,13 @@
          (+= :xi xg)
          (+= :yi yg)
          (+= :zi zg)
-         (+= :life fade))
+         (-= :life fade))
      (merge particle
             {:life  0.0
              :fade  (prim double (+ (/ (rand-int 100) 1000.0) 0.003))
+             :r     ((colors col) 0)
+             :g     ((colors col) 1)
+             :b     ((colors col) 2)
              :x     0.0
              :y     0.0
              :z     0.0
@@ -124,7 +131,7 @@
 (defn update [[delta time] state]
   (-> state
       (update-in [:particles] #(map (fn [p] (update-particle p state)) %))
-      (update-in [:col] #(mod (inc %) 11))))
+      (update-in [:col] #(mod (inc %) 12))))
 
 (defn display [[delta time] {:keys [particles zoom] :as state}]
   (doseq [{:keys [x y z r g b life active]} particles]
@@ -134,11 +141,11 @@
             y    (double y)
             z    (+ (double z) (double zoom))
             half (double 0.5)]
-        draw-triangle-strip
-        (gl-tex-coord-2 1 1) (vertex (+ x half) (+ y half) z)
-        (gl-tex-coord-2 0 1) (vertex (- x half) (+ y half) z)
-        (gl-tex-coord-2 1 0) (vertex (+ x half) (- y half) z)
-        (gl-tex-coord-2 0 0) (vertex (- x half) (- y half) z)))))
+        (draw-triangle-strip
+         (texture 1 1) (vertex (+ x half) (+ y half) z)
+         (texture 0 1) (vertex (- x half) (+ y half) z)
+         (texture 1 0) (vertex (+ x half) (- y half) z)
+         (texture 0 0) (vertex (- x half) (- y half) z))))))
 
 (defn display-proxy [& args]
   (apply display args))
@@ -150,5 +157,3 @@
 
 (defn start []
   (app/start options {}))
-
-(start)
