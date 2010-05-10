@@ -11,8 +11,8 @@
 ;; -----------------------------------------------------------------------------
 ;; Vars
 
-(def image-path (ImageIO/read (File. (pwd) "/src/clj_nehe/Crate.bmp")))
-(def max-particles 1000)
+(def image-path (ImageIO/read (File. (pwd) "/src/clj_nehe/Particle.bmp")))
+(def max-particles 5)
 (def app-width 640)
 (def app-height 480)
 
@@ -22,23 +22,24 @@
          [0.5 0.5 1] [0.75 0.5 1] [1 0.5 1] [1 0.5 0.75]])
 
 (def particles
-     (for [x (range max-particles)]
-       (let [[r g b] (colors (int (* x (/ 12 max-particles))))]
-        {:active true
-         :life   1.0
-         :fade   (+ (/ (rand-int 100) 1000.0) 0.003)
-         :r      r
-         :g      g
-         :b      b
-         :x      0.0
-         :y      0.0
-         :z      0.0
-         :xi     (* (- (rand-int 50) 25.0) 10.0)
-         :yi     (* (- (rand-int 50) 25.0) 10.0)
-         :zi     (* (- (rand-int 50) 25.0) 10.0)
-         :xg     0.0
-         :yg     -0.8
-         :zg     0.0})))
+     (into []
+           (for [x (range max-particles)]
+             (let [[r g b] (colors (int (* x (/ 12 max-particles))))]
+               {:active true
+                :life   1.0
+                :fade   (+ (/ (rand-int 100) 1000.0) 0.003)
+                :r      r
+                :g      g
+                :b      b
+                :x      0.0
+                :y      0.0
+                :z      0.0
+                :xi     (* (- (rand-int 50) 25.0) 10.0)
+                :yi     (* (- (rand-int 50) 25.0) 10.0)
+                :zi     (* (- (rand-int 50) 25.0) 10.0)
+                :xg     0.0
+                :yg     -0.8
+                :zg     0.0}))))
 
 (def tri [[0 1 0]
             [-1 -1 0]
@@ -48,6 +49,19 @@
              [1 1 0]
              [1 -1 0]
              [-1 -1 0]])
+
+(def initial-state
+     {:fullscreen false
+      :rainbow    true
+      :col        0
+      :sp         false
+      :rp         false
+      :slowdown   2.0
+      :xspeed     0
+      :yspeed     0
+      :zoom       -40.0
+      :delay      0
+      :particles  particles})
 
 ;; -----------------------------------------------------------------------------
 ;; Import
@@ -76,19 +90,7 @@
   (hint :perspective-correction-hint :nicest)
   (hint :point-smooth-hint :nicest)
   (enable :texture-2d)
-  (merge state
-         {:fullscreen false
-          :rainbow    true
-          :col        0
-          :sp         false
-          :rp         false
-          :slowdown   2.0
-          :xspeed     0
-          :yspeed     0
-          :zoom       -40.0
-          :delay      0
-          :particles  particles
-          :texture    (load-texture-from-image image-path)}))
+  (merge state initial-state {:texture (load-texture-from-image image-path)}))
 
 (defn reshape [[x y width height] state]
   (viewport 0 0 app-width app-height)
@@ -136,16 +138,17 @@
 (defn display [[delta time] {:keys [particles zoom] :as state}]
   (doseq [{:keys [x y z r g b life active]} particles]
     (if active
-      (color r g b life)
-      (let [x    (double x)
-            y    (double y)
-            z    (+ (double z) (double zoom))
-            half (double 0.5)]
-        (draw-triangle-strip
-         (texture 1 1) (vertex (+ x half) (+ y half) z)
-         (texture 0 1) (vertex (- x half) (+ y half) z)
-         (texture 1 0) (vertex (+ x half) (- y half) z)
-         (texture 0 0) (vertex (- x half) (- y half) z))))))
+      (do
+        (color r g b life)
+        (let [x    (double x)
+              y    (double y)
+              z    (+ (double z) (double zoom))
+              half (double 0.5)]
+          (draw-triangle-strip
+           (texture 1 1) (vertex (+ x half) (+ y half) z)
+           (texture 0 1) (vertex (- x half) (+ y half) z)
+           (texture 1 0) (vertex (+ x half) (- y half) z)
+           (texture 0 0) (vertex (- x half) (- y half) z)))))))
 
 (defn display-proxy [& args]
   (apply display args))
