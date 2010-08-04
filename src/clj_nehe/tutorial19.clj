@@ -26,8 +26,7 @@
      (into []
            (for [x (range max-particles)]
              (let [[r g b] (colors (int (* x (/ 12 max-particles))))]
-               {:active true
-                :life 1.0
+               {:life 1.0
                 :fade (+ (/ (rand-int 100) 1000.0) 0.003)
                 :r r :g g :b b
                 :x 0.0 :y 0.0 :z 0.0
@@ -115,8 +114,8 @@
 
 (defn display [[delta time] {:keys [particles zoom] :as state}]
   (text/write-to-screen (str (int (/ 1 delta)) " fps") 0 0)
-  (doseq [{:keys [x y z r g b life active]} particles]
-    (if active
+  (doseq [{:keys [x y z r g b life]} particles]
+    (if (> (- life fade) 0.0)
       (do
         (color r g b life)
         (let [x    (double x)
