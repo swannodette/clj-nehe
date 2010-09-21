@@ -3,3 +3,6 @@ pom.xml
 lib
 classes
 native
+.cake/*
+/.emacs.desktop
+/.emacs.desktop.lock
